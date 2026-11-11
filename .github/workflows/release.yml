@@ -78,6 +78,8 @@ jobs:
           app=src-tauri/target/universal-apple-darwin/release/bundle/macos/Pullbell.app
           codesign -dv --verbose=2 "$app" 2>&1 | tee "$RUNNER_TEMP/codesign.txt"
           grep -qx "Authority=$APPLE_SIGNING_IDENTITY" "$RUNNER_TEMP/codesign.txt"
+          # The identity is a secret, so the log masks it above; print it with _ for spaces.
+          echo "Signed by: $(sed -n 's/^Authority=//p' "$RUNNER_TEMP/codesign.txt" | tr ' ' '_')"
           codesign --verify --deep --strict "$app"
           lipo -archs "$app"/Contents/MacOS/*
 
