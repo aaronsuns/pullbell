@@ -111,6 +111,16 @@ export function SettingsView() {
         </select>
       </div>
       <div className="field">
+        <label>CI run notifications</label>
+        <select
+          value={s.alerts.ci_runs ?? "ignore"}
+          onChange={(e) => void save({ ...s, alerts: { ...s.alerts, ci_runs: e.target.value === "fyi" ? "fyi" : "ignore" } })}
+        >
+          <option value="ignore">Ignore</option>
+          <option value="fyi">FYI</option>
+        </select>
+      </div>
+      <div className="field">
         <label>Deploy workflow pattern</label>
         <input
           defaultValue={s.alerts.failure_pattern}

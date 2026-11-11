@@ -4,7 +4,7 @@ use chrono::{DateTime, NaiveDateTime, Utc};
 use pullbell_lib::core::inbox::State;
 use pullbell_lib::core::model::Kind;
 use pullbell_lib::core::scope::{Scope, ScopeMode};
-use pullbell_lib::core::settings::Settings;
+use pullbell_lib::core::settings::{CiRuns, Settings};
 use pullbell_lib::github::{ApiError, GitHub};
 use pullbell_lib::sync::{sync, MY_PRS_QUERY, WAITING_QUERY};
 use serde_json::{json, Value};
@@ -257,4 +257,127 @@ async fn sso_on_a_comment_still_lists_the_item() {
         Some("https://github.com/orgs/octo-org/sso?x=1")
     );
     assert!(state.items.iter().any(|i| i.key == "n:1002"));
+}
+
+fn ci_notification(id: &str) -> Value {
+    json!({
+        "id": id,
+        "unread": true,
+        "reason": "ci_activity",
+        "updated_at": "2026-03-02T11:00:00Z",
+        "subject": {
+            "title": "CI workflow run failed for main branch",
+            "url": null,
+            "latest_comment_url": null,
+            "type": "CheckSuite"
+        },
+        "repository": { "full_name": "octo-org/web-app" }
+    })
+}
+
+async fn run_sync(gh: &GitHub, state: &mut State, settings: &Settings) {
+    sync(
+        gh,
+        state,
+        settings,
+        &Scope::default(),
+        "octocat",
+        now(),
+        local("2026-03-02 08:00"),
+    )
+    .await
+    .unwrap();
+}
+
+#[tokio::test]
+async fn ci_run_notifications_are_ignored_by_default() {
+    let server = MockServer::start().await;
+    let base = server.uri();
+    mount_github(
+        &server,
+        json!([
+            ci_notification("2001"),
+            ci_notification("2002"),
+            fixture("notification_author_comment", &base)
+        ]),
+        json!({"workflow_runs": []}),
+    )
+    .await;
+    let gh = GitHub::new(&base, "t");
+    let mut state = State::default();
+    run_sync(&gh, &mut state, &Settings::default()).await;
+    let keys: Vec<&str> = state.items.iter().map(|i| i.key.as_str()).collect();
+    assert!(keys.contains(&"n:1002"));
+    assert!(!keys.contains(&"n:2001") && !keys.contains(&"n:2002"));
+    assert!(state.done.is_empty(), "not marked done");
+    let marked_read = server
+        .received_requests()
+        .await
+        .unwrap()
+        .iter()
+        .any(|r| r.method.as_str() == "PATCH");
+    assert!(!marked_read, "left untouched on GitHub");
+
+    // FYI chosen: they show up as FYI items.
+    let mut fyi = Settings::default();
+    fyi.alerts.ci_runs = CiRuns::Fyi;
+    let mut state = State::default();
+    run_sync(&gh, &mut state, &fyi).await;
+    let ci = state.items.iter().find(|i| i.key == "n:2001").unwrap();
+    assert_eq!(ci.kind, Kind::Other);
+    assert!(!fyi.needs_you(ci.kind));
+}
+
+#[tokio::test]
+async fn upgrade_drops_ci_items_saved_without_a_reason() {
+    let server = MockServer::start().await;
+    let base = server.uri();
+    mount_github(
+        &server,
+        json!([
+            ci_notification("2001"),
+            fixture("notification_author_comment", &base)
+        ]),
+        json!({"workflow_runs": []}),
+    )
+    .await;
+    let gh = GitHub::new(&base, "t");
+
+    // State as an older version saved it: FYI CI items without a reason, and a cached
+    // Last-Modified that would normally make GitHub answer 304.
+    let mut fyi = Settings::default();
+    fyi.alerts.ci_runs = CiRuns::Fyi;
+    let mut state = State::default();
+    run_sync(&gh, &mut state, &fyi).await;
+    for i in &mut state.items {
+        i.reason = None;
+    }
+    let mut old: Value = serde_json::to_value(&state).unwrap();
+    old.as_object_mut().unwrap().remove("reasons_backfilled");
+    let mut state: State = serde_json::from_value(old).unwrap();
+    state.notifications_last_modified = Some("Mon, 02 Mar 2026 11:00:00 GMT".into());
+    let mut orphan = state
+        .items
+        .iter()
+        .find(|i| i.key == "n:2001")
+        .unwrap()
+        .clone();
+    orphan.key = "n:2999".into(); // a CI item GitHub no longer lists: no reason, so it stays
+    state.items.push(orphan);
+    assert!(!state.reasons_backfilled);
+
+    run_sync(&gh, &mut state, &Settings::default()).await;
+    let keys: Vec<&str> = state.items.iter().map(|i| i.key.as_str()).collect();
+    assert!(!keys.contains(&"n:2001"), "{keys:?}");
+    assert!(keys.contains(&"n:1002"));
+    assert!(keys.contains(&"n:2999"));
+    assert!(state.reasons_backfilled);
+    let conditional = server
+        .received_requests()
+        .await
+        .unwrap()
+        .iter()
+        .filter(|r| r.url.path() == "/notifications")
+        .any(|r| r.headers.contains_key("if-modified-since"));
+    assert!(!conditional, "the cached Last-Modified is skipped once");
 }

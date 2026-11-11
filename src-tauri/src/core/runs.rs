@@ -91,6 +91,7 @@ pub fn failures(
                 url: r.html_url.clone(),
                 updated_at: r.updated_at,
                 thread_id: None,
+                reason: None,
             }
         })
         .collect();

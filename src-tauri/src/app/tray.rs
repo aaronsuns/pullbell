@@ -10,7 +10,7 @@ use tauri::{AppHandle, Wry};
 
 use super::{lock, shared, windows};
 use crate::core::health::Status;
-use crate::core::inbox::{row, title};
+use crate::core::inbox::{clear_label, nothing_label, row, title};
 use crate::core::model::PullRequest;
 
 const TRAY_ID: &str = "pullbell";
@@ -92,11 +92,12 @@ fn build_menu(app: &AppHandle) -> tauri::Result<Menu<Wry>> {
         .iter()
         .filter(|i| settings.needs_you(i.kind))
         .collect();
+    let fyi = items.len() - needs.len();
     if needs.is_empty() {
         menu.append(&MenuItem::with_id(
             app,
             "none",
-            "Nothing needs you",
+            nothing_label(fyi),
             false,
             None::<&str>,
         )?)?;
@@ -114,7 +115,7 @@ fn build_menu(app: &AppHandle) -> tauri::Result<Menu<Wry>> {
     menu.append(&MenuItem::with_id(
         app,
         "clear",
-        format!("Clear all ({})", items.len()),
+        clear_label(needs.len(), fyi),
         !items.is_empty(),
         None::<&str>,
     )?)?;

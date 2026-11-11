@@ -33,6 +33,7 @@ is never dropped.
 | default-branch failure | needs you | 🔥 | a workflow run on the default branch of a watched repo fails, and its workflow name looks like a deploy or release (configurable pattern, default `deploy|release|publish`) |
 | digest | needs you | 📋 | once a day at a chosen hour: the review requests still waiting on you (one banner, one item) |
 | bot / other | FYI | 🤖 | anything from a bot account (`[bot]` suffix or `type: Bot`), and every other notification reason |
+| CI runs | ignored | — | notifications with reason `ci_activity` (GitHub sends one per workflow run you triggered). Ignored by default: left untouched on GitHub, just not added to the list. Settings → Alerts → **CI run notifications**: ignore (default) / FYI. Failures that matter are covered by the default-branch failure kind and the CI glyph in My open PRs |
 
 Rules:
 - Your own actions never create events (your comment, your review, your push).
@@ -78,7 +79,10 @@ Menu, top to bottom:
    **Update available (x.y.z)**.
 2. The newest needs-you items (up to 10): `emoji repo · actor action: text`. Clicking opens it in the browser
    and marks it done.
-3. **Clear all (k)**: marks every item done.
+   When no item needs you, one disabled line says so, e.g. **Nothing needs you · 12 FYI** (or just
+   **Nothing needs you**), and the FYI part tells the user where those are: **Open queue** lists them.
+3. **Clear all (k)**, where k counts every item, labelled so the split is clear: **Clear all (3 + 12 FYI)**
+   or **Clear all (12 FYI)**. Marks every item done.
 4. **My open PRs (k) ›** submenu: one row per PR with CI state (🟢 green, 🔴 failing, 🟡 running) and review
    state (✅ approved, 👀 waiting, ❌ changes requested, 📝 draft, ⚠️ conflict), `repo#number title`.
 5. **Waiting for my review (k) ›** submenu.

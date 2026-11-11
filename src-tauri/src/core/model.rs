@@ -92,6 +92,10 @@ pub struct Event {
     pub updated_at: DateTime<Utc>,
     /// GitHub notification thread id, if any, so "done" can mark it read.
     pub thread_id: Option<String>,
+    /// GitHub notification `reason` (e.g. `ci_activity`) for items that came from a
+    /// notification. Absent on other items and on items saved by older versions.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
 }
 
 /// An entry in the inbox. Same fields as an [`Event`]; kept as an alias so the JSON on disk is

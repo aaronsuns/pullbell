@@ -5,7 +5,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use chrono::{DateTime, NaiveDateTime, Utc};
 
-use crate::core::classify::classify;
+use crate::core::classify::{classify, ignored};
 use crate::core::digest;
 use crate::core::inbox::{banners, Banner, State};
 use crate::core::model::{Event, PullRequest};
@@ -50,11 +50,15 @@ pub async fn sync(
     let mut out = SyncResult::default();
     let mut events = Vec::new();
 
-    // 1. Notifications.
-    match gh
-        .notifications(state.notifications_last_modified.as_deref())
-        .await?
-    {
+    // 1. Notifications. Until reasons are backfilled (first poll after upgrading from a version
+    // that did not record them), fetch the full list instead of asking "modified since".
+    let since = if state.reasons_backfilled {
+        state.notifications_last_modified.clone()
+    } else {
+        None
+    };
+    let ci_runs = settings.alerts.ci_runs;
+    match gh.notifications(since.as_deref()).await? {
         NotificationsPage::NotModified { poll_interval } => out.poll_interval = poll_interval,
         NotificationsPage::Page {
             items,
@@ -70,6 +74,10 @@ pub async fn sync(
                     continue;
                 }
                 let key = format!("n:{}", n.id);
+                state.backfill_reason(&key, &n.reason);
+                if ignored(&n.reason, ci_runs) {
+                    continue; // CI runs: not ours to handle, and left unread on GitHub
+                }
                 let known = state
                     .items
                     .iter()
@@ -97,8 +105,10 @@ pub async fn sync(
                 events.extend(classify(&n, detail.as_ref(), login));
             }
             state.notifications_last_modified = last_modified;
+            state.reasons_backfilled = true;
         }
     }
+    state.drop_ignored(ci_runs);
 
     // 2. My open PRs (transitions) and PRs waiting for my review.
     let in_scope = |prs: Vec<PullRequest>| -> Vec<PullRequest> {

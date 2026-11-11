@@ -32,6 +32,14 @@ The menu bar shows `n+m`: **n** things need you, **m** are FYI.
 Your own comments, reviews and pushes never ring. A burst of comments on one PR is one banner.
 Every kind can be switched to FYI in Settings → Alerts.
 
+CI run notifications (GitHub's `ci_activity`, one per workflow run you triggered) are ignored by
+default: left unread on GitHub and kept out of the list. Failures that matter still show up as 🔥
+deploy failures and in the CI glyph of My open PRs. Set Settings → Alerts → **CI run
+notifications** to FYI to list them anyway.
+
+When nothing needs you the menu says so, with the FYI count (**Nothing needs you · 12 FYI**);
+**Clear all (3 + 12 FYI)** shows the split of what it will clear.
+
 ## Install
 
 1. Download `Pullbell_x.y.z_universal.dmg` from the
@@ -73,7 +81,8 @@ Shortcuts can be changed or cleared in Settings → General (click the box, pres
 Marking an item done also marks the GitHub notification as read.
 
 Settings also has the poll interval (1, 3, 5 or 10 minutes; default 3), the daily digest hour,
-the deploy-workflow name pattern (default `deploy|release|publish`), and which browser opens
+the deploy-workflow name pattern (default `deploy|release|publish`), CI run notifications
+(ignore or FYI; default ignore), and which browser opens
 links: the system default, a specific browser app, or a specific Chrome profile.
 
 ## Updates

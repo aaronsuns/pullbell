@@ -44,6 +44,7 @@ pub fn build(waiting: &[PullRequest], date: NaiveDate, now: DateTime<Utc>) -> Op
         url: "https://github.com/pulls/review-requested".into(),
         updated_at: now,
         thread_id: None,
+        reason: None,
     })
 }
 

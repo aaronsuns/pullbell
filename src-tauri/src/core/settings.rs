@@ -49,6 +49,21 @@ pub struct AlertSettings {
     pub banners: BTreeMap<Kind, bool>,
     pub digest_hour: Option<u8>,
     pub failure_pattern: String,
+    /// What to do with `ci_activity` notifications (one per workflow run you triggered).
+    /// Settings files written before this field existed load as [`CiRuns::Ignore`].
+    pub ci_runs: CiRuns,
+}
+
+/// Settings → Alerts → CI run notifications.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CiRuns {
+    /// Show them as FYI items, like any other notification.
+    Fyi,
+    /// Leave them unread on GitHub and keep them out of the list. Unknown values load as this.
+    #[default]
+    #[serde(other)]
+    Ignore,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -102,6 +117,7 @@ impl Default for AlertSettings {
                 .collect(),
             digest_hour: None,
             failure_pattern: DEFAULT_PATTERN.into(),
+            ci_runs: CiRuns::Ignore,
         }
     }
 }
@@ -294,6 +310,7 @@ mod tests {
         assert!(s.updates.auto_install);
         assert_eq!(s.alerts.failure_pattern, "deploy|release|publish");
         assert_eq!(s.alerts.digest_hour, None);
+        assert_eq!(s.alerts.ci_runs, CiRuns::Ignore);
         assert!(s.needs_you(Kind::ReviewRequested));
         assert!(!s.needs_you(Kind::Other));
         assert_eq!(s.shortcuts.queue.as_deref(), Some("Ctrl+Cmd+G"));
@@ -370,6 +387,35 @@ mod tests {
         let (s, _) = Settings::from_json(&raw);
         assert_eq!(s.shortcuts.queue, None);
         assert_eq!(s.shortcuts.my_prs.as_deref(), Some("Ctrl+Cmd+P"));
+    }
+
+    #[test]
+    fn ci_runs_defaults_to_ignore_for_existing_files() {
+        // A file saved before the setting existed.
+        let raw = json!({
+            "version": 1,
+            "alerts": { "digest_hour": 9, "failure_pattern": "deploy", "banners": { "other": true } }
+        })
+        .to_string();
+        let (s, corrupt) = Settings::from_json(&raw);
+        assert!(!corrupt);
+        assert_eq!(s.alerts.ci_runs, CiRuns::Ignore);
+        assert_eq!(s.alerts.digest_hour, Some(9), "rest of alerts kept");
+        assert!(s.needs_you(Kind::Other));
+    }
+
+    #[test]
+    fn ci_runs_round_trips_and_bad_values_fall_back() {
+        let raw = json!({ "alerts": { "ci_runs": "fyi" } }).to_string();
+        assert_eq!(Settings::from_json(&raw).0.alerts.ci_runs, CiRuns::Fyi);
+        let raw = json!({ "alerts": { "ci_runs": "loud", "digest_hour": 8 } }).to_string();
+        let s = Settings::from_json(&raw).0;
+        assert_eq!(s.alerts.ci_runs, CiRuns::Ignore);
+        assert_eq!(
+            s.alerts.digest_hour,
+            Some(8),
+            "one bad field keeps the rest of alerts"
+        );
     }
 
     #[test]

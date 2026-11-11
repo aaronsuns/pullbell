@@ -121,6 +121,7 @@ fn pr_event(pr: &PullRequest, kind: Kind, action: &str, now: DateTime<Utc>) -> E
         url: pr.url.clone(),
         updated_at: now,
         thread_id: None,
+        reason: None,
     }
 }
 

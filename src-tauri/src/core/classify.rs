@@ -6,6 +6,7 @@ use serde::Deserialize;
 use serde_json::Value;
 
 use super::model::{Event, Kind};
+use super::settings::CiRuns;
 use super::text::{api_to_html, is_bot, snippet, trailing_number, BANNER_TEXT_LEN};
 
 #[derive(Debug, Clone, Deserialize)]
@@ -70,6 +71,20 @@ fn actor_of(detail: Option<&Value>) -> Option<(String, Option<String>)> {
     Some((login, ty))
 }
 
+/// The notification reason GitHub uses for workflow runs you triggered.
+pub const CI_ACTIVITY: &str = "ci_activity";
+
+/// Is this notification reason a CI run notification?
+pub fn is_ci_activity(reason: &str) -> bool {
+    reason.eq_ignore_ascii_case(CI_ACTIVITY)
+}
+
+/// Should a notification with this reason be left out of the list entirely? (It is not marked
+/// read on GitHub either; it is simply not ours to handle.)
+pub fn ignored(reason: &str, ci_runs: CiRuns) -> bool {
+    ci_runs == CiRuns::Ignore && is_ci_activity(reason)
+}
+
 /// Classify one notification. `me` is the signed-in login; `detail` is the JSON behind
 /// `latest_comment_url` (or the latest review), when it could be fetched.
 /// Returns `None` for things that must not create an event (your own actions).
@@ -131,6 +146,7 @@ pub fn classify(n: &Notification, detail: Option<&Value>, me: &str) -> Option<Ev
         url,
         updated_at: n.updated_at,
         thread_id: Some(n.id.clone()),
+        reason: Some(n.reason.clone()),
     })
 }
 
@@ -169,6 +185,7 @@ mod tests {
         assert_eq!(e.url, "https://github.com/octo-org/web-app/pull/42");
         assert_eq!(e.text, "Add dark mode toggle");
         assert_eq!(e.thread_id.as_deref(), Some("1001"));
+        assert_eq!(e.reason.as_deref(), Some("review_requested"));
     }
 
     #[test]
@@ -262,6 +279,28 @@ mod tests {
             let e = classify(&n, Some(&fx("issue_comment_sam")), "octocat").unwrap();
             assert_eq!(e.kind, Kind::Other, "{reason}");
         }
+    }
+
+    #[test]
+    fn ci_activity_is_ignored_by_default_and_fyi_on_request() {
+        assert!(is_ci_activity("ci_activity"));
+        assert!(is_ci_activity("CI_ACTIVITY"));
+        assert!(!is_ci_activity("author"));
+        assert!(!is_ci_activity(""));
+        assert!(ignored("ci_activity", CiRuns::default()));
+        assert!(!ignored("ci_activity", CiRuns::Fyi));
+        for reason in ["author", "review_requested", "mention", "subscribed"] {
+            assert!(!ignored(reason, CiRuns::Ignore), "{reason}");
+        }
+        // With FYI chosen, a CI run notification is an ordinary FYI item carrying its reason.
+        let mut n = with_reason("notification_author_comment", "ci_activity");
+        n.subject.kind = "CheckSuite".into();
+        n.subject.url = None;
+        n.subject.latest_comment_url = None;
+        let e = classify(&n, None, "octocat").unwrap();
+        assert_eq!(e.kind, Kind::Other);
+        assert_eq!(e.reason.as_deref(), Some("ci_activity"));
+        assert_eq!(e.url, "https://github.com/octo-org/web-app");
     }
 
     #[test]

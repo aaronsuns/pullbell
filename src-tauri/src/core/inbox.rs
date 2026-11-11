@@ -5,9 +5,10 @@ use std::collections::BTreeMap;
 use chrono::{DateTime, Duration, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 
+use super::classify::ignored;
 use super::model::{Event, Item};
 use super::prs::PrPhase;
-use super::settings::Settings;
+use super::settings::{CiRuns, Settings};
 use super::text::snippet;
 
 /// How long a done-marker is remembered (so a stale notification does not come back).
@@ -33,6 +34,9 @@ pub struct State {
     pub synced_once: bool,
     /// Version installed by the updater, announced once after the restart.
     pub installed_update: Option<String>,
+    /// True once a full notifications fetch has filled in `reason` on items saved by versions
+    /// that did not record it (so ignored CI-run items can be dropped after an upgrade).
+    pub reasons_backfilled: bool,
 }
 
 impl State {
@@ -56,6 +60,28 @@ impl State {
         self.items.sort_by_key(|i| std::cmp::Reverse(i.updated_at));
         self.items.truncate(MAX_ITEMS);
         fresh
+    }
+
+    /// Record the notification reason on an existing item that lacks one (saved by an older
+    /// version). Items that already have a reason are left alone.
+    pub fn backfill_reason(&mut self, key: &str, reason: &str) {
+        if let Some(i) = self
+            .items
+            .iter_mut()
+            .find(|i| i.key == key && i.reason.is_none())
+        {
+            i.reason = Some(reason.to_string());
+        }
+    }
+
+    /// Drop items whose notification reason is ignored by the settings (CI runs, by default).
+    /// They are not marked done or read on GitHub. Items without a reason stay. Returns how many
+    /// were dropped.
+    pub fn drop_ignored(&mut self, ci_runs: CiRuns) -> usize {
+        let before = self.items.len();
+        self.items
+            .retain(|i| !i.reason.as_deref().is_some_and(|r| ignored(r, ci_runs)));
+        before - self.items.len()
     }
 
     pub fn mark_done(&mut self, key: &str) -> Option<Item> {
@@ -107,6 +133,25 @@ pub fn title(n: usize, m: usize) -> String {
         (0, 0) => "0".into(),
         (n, 0) => n.to_string(),
         (n, m) => format!("{n}+{m}"),
+    }
+}
+
+/// The disabled menu line shown when nothing needs you: `Nothing needs you · 12 FYI`.
+pub fn nothing_label(fyi: usize) -> String {
+    if fyi == 0 {
+        "Nothing needs you".into()
+    } else {
+        format!("Nothing needs you · {fyi} FYI")
+    }
+}
+
+/// The "Clear all" menu label, showing the needs-you / FYI split: `Clear all (3 + 12 FYI)`.
+pub fn clear_label(n: usize, m: usize) -> String {
+    match (n, m) {
+        (0, 0) => "Clear all".into(),
+        (n, 0) => format!("Clear all ({n})"),
+        (0, m) => format!("Clear all ({m} FYI)"),
+        (n, m) => format!("Clear all ({n} + {m} FYI)"),
     }
 }
 
@@ -205,6 +250,7 @@ mod tests {
             ),
             updated_at: format!("2026-03-02T{t}:00Z").parse().unwrap(),
             thread_id: None,
+            reason: None,
         }
     }
 
@@ -308,6 +354,64 @@ mod tests {
             "💬 octo-org/web-app · sam commented: text n:1 10:00"
         );
         assert!(row(&e, 20).chars().count() <= 20);
+    }
+
+    #[test]
+    fn menu_labels_show_the_split() {
+        assert_eq!(nothing_label(0), "Nothing needs you");
+        assert_eq!(nothing_label(12), "Nothing needs you · 12 FYI");
+        assert_eq!(clear_label(0, 0), "Clear all");
+        assert_eq!(clear_label(3, 0), "Clear all (3)");
+        assert_eq!(clear_label(0, 12), "Clear all (12 FYI)");
+        assert_eq!(clear_label(3, 12), "Clear all (3 + 12 FYI)");
+    }
+
+    fn with_reason(mut e: Event, reason: Option<&str>) -> Event {
+        e.reason = reason.map(str::to_string);
+        e
+    }
+
+    #[test]
+    fn ci_items_are_dropped_unless_fyi_is_chosen() {
+        let mut s = State::default();
+        s.apply(vec![
+            with_reason(ev("n:1", Kind::Other, None, "10:00"), Some("ci_activity")),
+            with_reason(ev("n:2", Kind::Comment, Some(7), "10:01"), Some("author")),
+            with_reason(ev("n:3", Kind::Other, None, "10:02"), None),
+            with_reason(ev("n:4", Kind::Other, None, "10:03"), Some("ci_activity")),
+        ]);
+        assert_eq!(s.drop_ignored(CiRuns::Fyi), 0);
+        assert_eq!(s.items.len(), 4);
+        assert_eq!(s.drop_ignored(CiRuns::Ignore), 2);
+        let keys: Vec<_> = s.items.iter().map(|i| i.key.as_str()).collect();
+        assert_eq!(keys, vec!["n:3", "n:2"], "no reason recorded: kept");
+        assert!(s.done.is_empty(), "dropped, not marked done");
+    }
+
+    #[test]
+    fn backfill_only_fills_missing_reasons() {
+        let mut s = State::default();
+        s.apply(vec![
+            ev("n:1", Kind::Other, None, "10:00"),
+            with_reason(ev("n:2", Kind::Comment, Some(7), "10:01"), Some("author")),
+        ]);
+        s.backfill_reason("n:1", "ci_activity");
+        s.backfill_reason("n:2", "ci_activity");
+        s.backfill_reason("n:9", "ci_activity");
+        assert_eq!(s.items[1].reason.as_deref(), Some("ci_activity"));
+        assert_eq!(s.items[0].reason.as_deref(), Some("author"));
+        assert_eq!(s.drop_ignored(CiRuns::Ignore), 1);
+    }
+
+    #[test]
+    fn items_saved_without_a_reason_still_load() {
+        let mut s = State::default();
+        s.apply(vec![ev("n:1", Kind::Other, None, "10:00")]);
+        let raw = serde_json::to_string(&s).unwrap();
+        assert!(!raw.contains("\"reason\""), "absent reason is not written");
+        let back: State = serde_json::from_str(&raw).unwrap();
+        assert_eq!(back.items[0].reason, None);
+        assert!(!back.reasons_backfilled);
     }
 
     #[test]
