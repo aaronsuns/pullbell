@@ -57,42 +57,52 @@ the fallback is to run the device flow again when the token expires.
 
 ## Updater
 
-`src-tauri/tauri.conf.json` → `plugins.updater`:
+`src-tauri/tauri.conf.json` → `plugins.updater` holds the updater's public key (`pubkey`) and the
+endpoint `https://github.com/aaronsuns/pullbell/releases/latest/download/latest.json`, and
+`bundle.createUpdaterArtifacts` is `true`, so a build signed with the matching private key also
+produces `Pullbell.app.tar.gz` + `.sig`. The release workflow publishes those as
+`Pullbell_X.Y.Z_universal.app.tar.gz(.sig)` together with a `latest.json` that points all three
+macOS platform keys (`darwin-aarch64`, `darwin-x86_64`, `darwin-universal`) at that one universal
+bundle. The endpoint only answers once the repository is public.
 
-- `pubkey`: currently the placeholder `REPLACE_WITH_UPDATER_PUBLIC_KEY`. While it is the
-  placeholder, the app skips update checks and logs that.
-- `endpoints`: `https://github.com/aaronsuns/pullbell/releases/latest/download/latest.json`.
+If the key is ever lost, generate a new pair (`npx tauri signer generate`), replace `pubkey`, and
+update the two `TAURI_SIGNING_*` secrets. Installed copies signed for the old key cannot verify
+new updates, so their users have to download the next DMG by hand once.
 
-To turn updates on:
+## Signing and secrets
 
-1. `npx tauri signer generate -w ~/.tauri/pullbell.key` (keep the private key and its password
-   out of the repo).
-2. Paste the public key into `plugins.updater.pubkey`.
-3. Set `bundle.createUpdaterArtifacts` to `true`.
-4. Add repository secrets `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`.
-5. Each release needs a `latest.json` asset next to the `.app.tar.gz` and `.sig`, for example:
+The app is code-signed with a **self-signed** certificate, "Pullbell Self-Signed". There is no
+Apple Developer ID and no notarization, which is why the README has the `xattr` step. A stable
+signature still matters: macOS keeps Keychain and notification permissions across updates only
+while the signing identity stays the same.
 
-   ```json
-   {
-     "version": "0.2.0",
-     "notes": "…",
-     "pub_date": "2026-12-01T12:00:00Z",
-     "platforms": {
-       "darwin-aarch64": { "signature": "<contents of .sig>", "url": "https://github.com/aaronsuns/pullbell/releases/download/v0.2.0/Pullbell_universal.app.tar.gz" },
-       "darwin-x86_64":  { "signature": "<contents of .sig>", "url": "https://github.com/aaronsuns/pullbell/releases/download/v0.2.0/Pullbell_universal.app.tar.gz" }
-     }
-   }
-   ```
+All signing material lives in the GitHub repository secrets, with an encrypted backup kept by the
+owner:
+
+| Secret | What |
+|---|---|
+| `TAURI_SIGNING_PRIVATE_KEY`, `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | updater (minisign) key |
+| `APPLE_CERTIFICATE` (base64 .p12), `APPLE_CERTIFICATE_PASSWORD` | the self-signed code-signing certificate |
+| `APPLE_SIGNING_IDENTITY` | its name, `Pullbell Self-Signed` |
+
+Plus the repository variable `PULLBELL_CLIENT_ID` (see above). The release workflow imports the
+certificate into a temporary keychain, marks it trusted for code signing on the runner, and
+checks that `codesign -dv` shows `Authority=Pullbell Self-Signed` before publishing.
 
 ## Releasing
 
-1. Bump the version in `package.json`, `src-tauri/Cargo.toml` and `src-tauri/tauri.conf.json`.
-2. `./scripts/check.sh`, commit, tag `vX.Y.Z`, push the tag.
-3. `.github/workflows/release.yml` builds the universal app + DMG on macOS and attaches them to a
-   draft release. Add `latest.json` (see above), write notes, publish.
+1. Bump the version in `package.json`, `src-tauri/Cargo.toml` and `src-tauri/tauri.conf.json`
+   (and run `cargo check` in `src-tauri` so `Cargo.lock` follows). They must match; the workflow
+   refuses a tag that differs.
+2. `./scripts/check.sh`, commit, push to `main`, and wait for CI to go green.
+3. Tag and push: `git tag vX.Y.Z && git push origin vX.Y.Z`.
+4. `.github/workflows/release.yml` builds the universal app on macOS, signs it, verifies the
+   signature, and publishes the release (not a draft) with the DMG, the updater bundle + `.sig`
+   and `latest.json`, with install steps and generated notes. Edit the notes on GitHub if needed.
+5. A failed run: fix on `main`, then delete the release and tag and tag again:
+   `gh release delete vX.Y.Z --cleanup-tag -y && git tag -d vX.Y.Z`, then step 3.
 
-The app is not notarized, which is why the README has the `xattr` step. Notarizing needs a paid
-Apple Developer account; if one is added, sign + notarize in the release workflow and drop that step.
+Installed copies pick the new version up through `latest.json` within six hours.
 
 ## Runtime files
 
@@ -124,10 +134,6 @@ Apple Developer account; if one is added, sign + notarize in the release workflo
 ## TODO
 
 - [ ] Verify refresh of expiring tokens with the real OAuth App (see above).
-- [ ] Generate the updater key, set the pubkey and publish `latest.json` (automate it in release.yml).
 - [ ] README screenshot.
-- [ ] Product page at https://pullbell.zexa.se.
 - [ ] Follow `Link` headers for more than 50 unread notifications.
 - [ ] UI tests for the windows (currently only the pure TS helpers are tested).
-- [ ] Watch the first CI run on ubuntu: the macOS-only code is compiled out there and has only
-      been built on macOS so far.

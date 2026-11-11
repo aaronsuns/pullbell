@@ -1,26 +1,39 @@
 name: Release
 
-# Builds a universal Pullbell.app + DMG for a version tag and attaches it to a draft release.
-# See MAINTAINING.md. Updater artifacts (latest.json + .sig) are produced only once the
-# TAURI_SIGNING_PRIVATE_KEY secret exists and createUpdaterArtifacts is enabled.
+# On a version tag: build a universal Pullbell.app + DMG, sign it with the self-signed
+# "Pullbell Self-Signed" identity, sign the updater bundle, write latest.json, and publish a
+# GitHub release with all of it. See MAINTAINING.md → Releasing.
+# The tests are not re-run here: the tagged commit has already been through CI on main.
 
 on:
   push:
     tags: ["v*"]
-  workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: release-${{ github.ref }}
+
 jobs:
-  build:
+  release:
     runs-on: macos-latest
     env:
       PULLBELL_CLIENT_ID: ${{ vars.PULLBELL_CLIENT_ID }}
       TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
       TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+      APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Check the tag matches the app version
+        run: |
+          want="${GITHUB_REF_NAME#v}"
+          have=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          [ "$want" = "$have" ] || { echo "::error::tag $GITHUB_REF_NAME but tauri.conf.json has $have"; exit 1; }
+          [ "$(node -p "require('./package.json').version")" = "$have" ] || { echo "::error::package.json version differs"; exit 1; }
+          grep -q "^version = \"$have\"" src-tauri/Cargo.toml || { echo "::error::Cargo.toml version differs"; exit 1; }
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -28,18 +41,96 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
       - run: npm ci
-      - run: ./scripts/check.sh
+
+      # The certificate is self-signed, so import it into a temporary keychain ourselves and mark
+      # it trusted for code signing; Tauri then finds the identity by name (APPLE_SIGNING_IDENTITY).
+      - name: Import the signing certificate
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          kc="$RUNNER_TEMP/pullbell.keychain-db"
+          kcpw=$(openssl rand -hex 16)
+          echo "$APPLE_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$kcpw" "$kc"
+          security set-keychain-settings -lut 3600 "$kc"
+          security unlock-keychain -p "$kcpw" "$kc"
+          security import "$RUNNER_TEMP/cert.p12" -k "$kc" -P "$APPLE_CERTIFICATE_PASSWORD" \
+            -T /usr/bin/codesign -T /usr/bin/security
+          rm -f "$RUNNER_TEMP/cert.p12"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$kcpw" "$kc" >/dev/null
+          security list-keychains -d user -s "$kc" $(security list-keychains -d user | tr -d '"')
+          security default-keychain -s "$kc"
+          security find-certificate -c "$APPLE_SIGNING_IDENTITY" -p "$kc" > "$RUNNER_TEMP/cert.pem"
+          sudo security add-trusted-cert -d -r trustRoot -p codeSign \
+            -k /Library/Keychains/System.keychain "$RUNNER_TEMP/cert.pem"
+          security find-identity -v -p codesigning "$kc"
+
       - name: Build universal app
         run: npm run tauri build -- --target universal-apple-darwin
-      - name: Upload to a draft release
+
+      - name: Verify the signature
+        run: |
+          app=src-tauri/target/universal-apple-darwin/release/bundle/macos/Pullbell.app
+          codesign -dv --verbose=2 "$app" 2>&1 | tee "$RUNNER_TEMP/codesign.txt"
+          grep -qx "Authority=$APPLE_SIGNING_IDENTITY" "$RUNNER_TEMP/codesign.txt"
+          codesign --verify --deep --strict "$app"
+          lipo -archs "$app"/Contents/MacOS/*
+
+      - name: Collect assets and write latest.json
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          dir=src-tauri/target/universal-apple-darwin/release/bundle
+          out="$RUNNER_TEMP/out"; mkdir -p "$out"
+          cp "$dir"/dmg/*.dmg "$out/"
+          tgz="Pullbell_${version}_universal.app.tar.gz"
+          cp "$dir/macos/Pullbell.app.tar.gz" "$out/$tgz"
+          cp "$dir/macos/Pullbell.app.tar.gz.sig" "$out/$tgz.sig"
+          SIG="$(cat "$out/$tgz.sig")" \
+          URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/$tgz" \
+          VERSION="$version" node -e '
+            const e = process.env;
+            const p = { signature: e.SIG, url: e.URL };
+            const j = {
+              version: e.VERSION,
+              notes: "https://github.com/" + e.GITHUB_REPOSITORY + "/releases/tag/" + e.GITHUB_REF_NAME,
+              pub_date: new Date().toISOString().replace(/\.\d+Z$/, "Z"),
+              platforms: { "darwin-aarch64": p, "darwin-x86_64": p, "darwin-universal": p },
+            };
+            require("fs").writeFileSync(process.argv[1], JSON.stringify(j, null, 2) + "\n");
+          ' "$out/latest.json"
+          cat "$out/latest.json"
+          ls -la "$out"
+
+      - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          tag="${GITHUB_REF_NAME}"
-          dir=src-tauri/target/universal-apple-darwin/release/bundle
-          gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --draft --title "Pullbell $tag" --notes "Release notes to follow."
-          gh release upload "$tag" "$dir"/dmg/*.dmg --clobber
-          if ls "$dir"/macos/*.tar.gz >/dev/null 2>&1; then
-            gh release upload "$tag" "$dir"/macos/*.tar.gz "$dir"/macos/*.tar.gz.sig --clobber
+          tag="$GITHUB_REF_NAME"
+          version="${tag#v}"
+          cat > "$RUNNER_TEMP/notes.md" <<EOF
+          ## Install
+
+          1. Download \`Pullbell_${version}_universal.dmg\` below and drag Pullbell to Applications (macOS 13+, Apple silicon or Intel).
+          2. Pullbell is signed but not notarized by Apple, so clear the quarantine flag once in Terminal:
+             \`xattr -dr com.apple.quarantine /Applications/Pullbell.app\`
+          3. Open Pullbell. Already installed? It updates itself.
+
+          More at https://pullbell.zexa.se.
+          EOF
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "$RUNNER_TEMP"/out/* --clobber
+          else
+            gh release create "$tag" "$RUNNER_TEMP"/out/* --title "Pullbell $version" \
+              --notes-file "$RUNNER_TEMP/notes.md" --generate-notes --verify-tag
           fi
+          gh release view "$tag" --json isDraft,isPrerelease,assets \
+            --jq '{isDraft, isPrerelease, assets: [.assets[].name]}'
+
+      - name: Remove the temporary keychain
+        if: always()
+        run: security delete-keychain "$RUNNER_TEMP/pullbell.keychain-db" 2>/dev/null || true
