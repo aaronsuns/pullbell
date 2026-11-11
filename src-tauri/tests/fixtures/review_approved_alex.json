@@ -1,0 +1,9 @@
+{
+  "id": 901,
+  "state": "APPROVED",
+  "html_url": "https://github.com/octo-org/web-app/pull/7#pullrequestreview-901",
+  "pull_request_url": "https://api.github.com/repos/octo-org/web-app/pulls/7",
+  "user": { "login": "alex", "type": "User" },
+  "body": "",
+  "submitted_at": "2026-03-02T12:00:00Z"
+}

@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permissions for Pullbell's own windows",
+  "windows": ["queue", "myprs", "settings", "welcome", "about"],
+  "permissions": ["core:default"]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "1002",
+  "unread": true,
+  "reason": "author",
+  "updated_at": "2026-03-02T10:15:00Z",
+  "subject": {
+    "title": "Speed up the build cache",
+    "url": "https://api.github.com/repos/octo-org/web-app/pulls/7",
+    "latest_comment_url": "https://api.github.com/repos/octo-org/web-app/issues/comments/555",
+    "type": "PullRequest"
+  },
+  "repository": { "full_name": "octo-org/web-app", "html_url": "https://github.com/octo-org/web-app" }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "1003",
+  "unread": true,
+  "reason": "mention",
+  "updated_at": "2026-03-02T13:00:00Z",
+  "subject": {
+    "title": "Flaky login test",
+    "url": "https://api.github.com/repos/octo-org/api-server/issues/88",
+    "latest_comment_url": "https://api.github.com/repos/octo-org/api-server/issues/comments/601",
+    "type": "Issue"
+  },
+  "repository": { "full_name": "octo-org/api-server", "html_url": "https://github.com/octo-org/api-server" }
+}

@@ -1,0 +1,8 @@
+{
+  "id": 555,
+  "html_url": "https://github.com/octo-org/web-app/pull/7#issuecomment-555",
+  "issue_url": "https://api.github.com/repos/octo-org/web-app/issues/7",
+  "user": { "login": "sam", "type": "User" },
+  "body": "Looks good overall,\n\nbut could we   keep the old cache key as a fallback for one release? Otherwise every branch rebuilds from scratch on the first run after deploy, which is slow.",
+  "created_at": "2026-03-02T10:14:00Z"
+}

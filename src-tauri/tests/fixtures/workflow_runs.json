@@ -1,0 +1,14 @@
+{
+  "total_count": 3,
+  "workflow_runs": [
+    { "id": 3003, "name": "Deploy to production", "head_branch": "main", "conclusion": "failure", "status": "completed",
+      "html_url": "https://github.com/octo-org/web-app/actions/runs/3003", "updated_at": "2026-03-02T14:00:00Z",
+      "actor": { "login": "jordan", "type": "User" }, "display_title": "Merge pull request #41" },
+    { "id": 3002, "name": "Lint", "head_branch": "main", "conclusion": "failure", "status": "completed",
+      "html_url": "https://github.com/octo-org/web-app/actions/runs/3002", "updated_at": "2026-03-02T13:50:00Z",
+      "actor": { "login": "jordan", "type": "User" }, "display_title": "Merge pull request #41" },
+    { "id": 2990, "name": "Release", "head_branch": "main", "conclusion": "failure", "status": "completed",
+      "html_url": "https://github.com/octo-org/web-app/actions/runs/2990", "updated_at": "2026-03-01T09:00:00Z",
+      "actor": { "login": "alex", "type": "User" }, "display_title": "v1.2.0" }
+  ]
+}

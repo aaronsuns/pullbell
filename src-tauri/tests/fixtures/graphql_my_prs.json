@@ -1,0 +1,26 @@
+{
+  "data": {
+    "search": {
+      "nodes": [
+        {
+          "number": 7, "title": "Speed up the build cache", "url": "https://github.com/octo-org/web-app/pull/7",
+          "isDraft": false, "updatedAt": "2026-03-02T12:30:00Z", "repository": { "nameWithOwner": "octo-org/web-app" },
+          "author": { "login": "octocat" }, "reviewDecision": "APPROVED", "mergeable": "MERGEABLE",
+          "commits": { "nodes": [ { "commit": { "statusCheckRollup": { "state": "SUCCESS" } } } ] }
+        },
+        {
+          "number": 12, "title": "Rework settings page", "url": "https://github.com/octo-org/web-app/pull/12",
+          "isDraft": false, "updatedAt": "2026-03-02T08:00:00Z", "repository": { "nameWithOwner": "octo-org/web-app" },
+          "author": { "login": "octocat" }, "reviewDecision": "REVIEW_REQUIRED", "mergeable": "CONFLICTING",
+          "commits": { "nodes": [ { "commit": { "statusCheckRollup": { "state": "FAILURE" } } } ] }
+        },
+        {
+          "number": 3, "title": "WIP: new onboarding", "url": "https://github.com/octo-org/api-server/pull/3",
+          "isDraft": true, "updatedAt": "2026-03-01T08:00:00Z", "repository": { "nameWithOwner": "octo-org/api-server" },
+          "author": { "login": "octocat" }, "reviewDecision": null, "mergeable": "UNKNOWN",
+          "commits": { "nodes": [ { "commit": { "statusCheckRollup": null } } ] }
+        }
+      ]
+    }
+  }
+}
