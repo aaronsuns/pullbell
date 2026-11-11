@@ -1,6 +1,6 @@
 [package]
 name = "pullbell"
-version = "0.1.0"
+version = "0.1.1"
 description = "A menu bar GitHub inbox"
 authors = ["Aaron Sun"]
 license = "MIT"
