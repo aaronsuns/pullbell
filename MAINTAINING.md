@@ -50,10 +50,11 @@ PULLBELL_CLIENT_ID=Ov23li41v8r0R8koUOxg npm run tauri build -- --bundles app
 Without it the build is a development build: sign-in uses the GitHub CLI's token
 (`gh auth token`), and that token is not stored in the Keychain.
 
-The OAuth App has device flow and expiring user tokens enabled and no client secret. Pullbell
-refreshes ten minutes before expiry with `grant_type=refresh_token` and the client id only.
-**Check this against a real expiring token.** If GitHub insists on a client secret for refresh,
-the fallback is to run the device flow again when the token expires.
+The OAuth App has device flow enabled, no client secret, and token expiration **opted out**
+(Settings → Optional features). GitHub refuses `grant_type=refresh_token` without a client secret
+(checked: `incorrect_client_credentials`), and a desktop app can't keep one, so tokens don't expire:
+sign in once, valid until the user revokes it. The refresh code stays for tokens that do carry an
+expiry, and a failed refresh falls back to signing in again.
 
 ## Updater
 
@@ -140,7 +141,6 @@ the zexa.se zone). Keep `sitemap.xml`'s `lastmod` and the JSON-LD `softwareVersi
 
 ## TODO
 
-- [ ] Verify refresh of expiring tokens with the real OAuth App (see above).
 - [ ] README screenshot.
 - [ ] Follow `Link` headers for more than 50 unread notifications.
 - [ ] UI tests for the windows (currently only the pure TS helpers are tested).
