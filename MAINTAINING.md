@@ -104,6 +104,13 @@ checks that `codesign -dv` shows `Authority=Pullbell Self-Signed` before publish
 
 Installed copies pick the new version up through `latest.json` within six hours.
 
+## Website
+
+<https://pullbell.zexa.se> is the static page in `site/public/`, served by the Cloudflare Worker
+`pullbell-site` (static assets only, custom domain set in `site/wrangler.toml`). Deploy with
+Node 22: `cd site && npx -y wrangler@4 deploy` (logged in to the Cloudflare account that holds
+the zexa.se zone). Keep `sitemap.xml`'s `lastmod` and the JSON-LD `softwareVersion` current.
+
 ## Runtime files
 
 - Settings and state: `~/Library/Application Support/se.zexa.pullbell/{settings,state}.json`,

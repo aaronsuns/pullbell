@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pullbell: a GitHub inbox in your Mac's menu bar</title>
+<meta name="description" content="Pullbell is a free, open-source macOS menu bar app that rings for GitHub review requests, comments, mentions and ready-to-merge PRs. No more lost reviews.">
+<link rel="canonical" href="https://pullbell.zexa.se/">
+<meta name="theme-color" content="#3b4bdb">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pullbell">
+<meta property="og:title" content="Pullbell: a GitHub inbox in your Mac's menu bar">
+<meta property="og:description" content="Rings for review requests, comments, mentions and ready-to-merge PRs. Everything else waits quietly. Free and open source.">
+<meta property="og:url" content="https://pullbell.zexa.se/">
+<meta property="og:image" content="https://pullbell.zexa.se/img/icon-512.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:image:alt" content="The Pullbell icon: a white bell on a blue square">
+<meta name="twitter:card" content="summary">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Pullbell",
+  "description": "A GitHub inbox in your Mac's menu bar. Pullbell raises a macOS banner for review requests, comments, replies, mentions, ready-to-merge PRs, conflicts and failed deploys, and keeps everything else in a quiet FYI list.",
+  "url": "https://pullbell.zexa.se/",
+  "image": "https://pullbell.zexa.se/img/icon-512.png",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "macOS",
+  "downloadUrl": "https://github.com/aaronsuns/pullbell/releases/latest",
+  "softwareVersion": "0.1.0",
+  "license": "https://opensource.org/licenses/MIT",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Aaron Sun" },
+  "publisher": { "@type": "Organization", "name": "Zexa", "url": "https://zexa.se" }
+}
+</script>
+
+<style>
+:root {
+  --bg: #f7f8fc;
+  --surface: #ffffff;
+  --surface-2: #eef0fa;
+  --text: #171a2c;
+  --muted: #5a6078;
+  --line: #dde1ef;
+  --brand: #3b4bdb;
+  --brand-ink: #ffffff;
+  --brand-soft: #e6e9fd;
+  --accent: #ff7a45;
+  --menu-bg: rgba(246, 246, 248, 0.92);
+  --menu-text: #1d1d1f;
+  --menu-muted: #8a8a8f;
+  --menu-hl: #3b6fe5;
+  --menu-line: rgba(0, 0, 0, 0.1);
+  --bar-bg: rgba(255, 255, 255, 0.7);
+  --desk: linear-gradient(135deg, #8fa2ff 0%, #c8b5ff 55%, #ffc8a8 100%);
+  --shadow: 0 20px 50px rgba(30, 40, 110, 0.18);
+  --code-bg: #171a2c;
+  --code-text: #e8eaff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1120;
+    --surface: #171a2e;
+    --surface-2: #1e2240;
+    --text: #e8eaf6;
+    --muted: #9ca2c0;
+    --line: #2a2f52;
+    --brand: #6f7dff;
+    --brand-ink: #0f1120;
+    --brand-soft: #232a5c;
+    --menu-bg: rgba(40, 40, 46, 0.94);
+    --menu-text: #f2f2f5;
+    --menu-muted: #8e8e96;
+    --menu-line: rgba(255, 255, 255, 0.12);
+    --bar-bg: rgba(30, 30, 36, 0.7);
+    --desk: linear-gradient(135deg, #1d2a6e 0%, #3a2a6e 55%, #6e3a2a 100%);
+    --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    --code-bg: #0a0c18;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1120;
+  --surface: #171a2e;
+  --surface-2: #1e2240;
+  --text: #e8eaf6;
+  --muted: #9ca2c0;
+  --line: #2a2f52;
+  --brand: #6f7dff;
+  --brand-ink: #0f1120;
+  --brand-soft: #232a5c;
+  --menu-bg: rgba(40, 40, 46, 0.94);
+  --menu-text: #f2f2f5;
+  --menu-muted: #8e8e96;
+  --menu-line: rgba(255, 255, 255, 0.12);
+  --bar-bg: rgba(30, 30, 36, 0.7);
+  --desk: linear-gradient(135deg, #1d2a6e 0%, #3a2a6e 55%, #6e3a2a 100%);
+  --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  --code-bg: #0a0c18;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+}
+a { color: var(--brand); }
+img { max-width: 100%; height: auto; }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+@media (min-width: 640px) { .wrap { padding: 0 24px; } }
+
+header.top { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 19px; color: var(--text); text-decoration: none; }
+.logo img { width: 32px; height: 32px; }
+.top nav a { color: var(--muted); text-decoration: none; margin-left: 18px; font-size: 15px; }
+.top nav a:hover { color: var(--text); }
+@media (max-width: 520px) { .top nav .opt { display: none; } }
+
+.hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; align-items: center; padding: 32px 0 64px; }
+@media (min-width: 900px) { .hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); padding-top: 56px; } }
+.hero h1 { font-size: clamp(34px, 6vw, 52px); line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 18px; }
+.hero h1 .hl { color: var(--brand); }
+.hero p.lede { font-size: 19px; color: var(--muted); margin: 0 0 28px; max-width: 34em; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 10px; font-weight: 600; text-decoration: none; font-size: 16px; }
+.btn.primary { background: var(--brand); color: var(--brand-ink); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.ghost { border: 1px solid var(--line); color: var(--text); background: var(--surface); }
+.btn.ghost:hover { border-color: var(--brand); }
+.small { font-size: 14px; color: var(--muted); }
+.cta + .small { margin-top: 14px; }
+
+/* Menu mock */
+.desk { background: var(--desk); border-radius: 18px; padding: 0 0 28px; box-shadow: var(--shadow); overflow: hidden; position: relative; }
+.bar { display: flex; justify-content: flex-end; align-items: center; gap: 16px; height: 30px; padding: 0 14px; background: var(--bar-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font-size: 13px; color: var(--menu-text); }
+.bar .bell { display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px; border-radius: 5px; background: rgba(127, 127, 127, 0.28); font-weight: 600; font-variant-numeric: tabular-nums; }
+.bar .bell svg { width: 13px; height: 13px; }
+.bar .dim { opacity: 0.7; }
+.menu { margin: 4px 14px 0 auto; width: min(400px, calc(100% - 28px)); background: var(--menu-bg); color: var(--menu-text); border-radius: 10px; padding: 5px; font-size: 13.5px; line-height: 1.35; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); border: 1px solid var(--menu-line); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+.menu .row { display: flex; align-items: center; gap: 8px; padding: 4px 9px; border-radius: 5px; white-space: nowrap; overflow: hidden; }
+.menu .row span.t { overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
+.menu .row.hl { background: var(--menu-hl); color: #fff; }
+.menu .row.hl .k { color: rgba(255, 255, 255, 0.8); }
+.menu .k { color: var(--menu-muted); font-size: 12.5px; margin-left: auto; padding-left: 12px; flex: none; }
+.menu .sep { height: 1px; background: var(--menu-line); margin: 5px 9px; }
+.menu .off { color: var(--menu-muted); }
+figure { margin: 0; }
+figcaption { text-align: center; margin-top: 12px; }
+
+section { padding: 56px 0; border-top: 1px solid var(--line); }
+section h2 { font-size: clamp(26px, 4vw, 34px); letter-spacing: -0.01em; margin: 0 0 10px; }
+section > .wrap > p.sub { color: var(--muted); margin: 0 0 32px; max-width: 40em; }
+
+.grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+.card h3 { margin: 0 0 6px; font-size: 17px; }
+.card p { margin: 0; color: var(--muted); font-size: 15.5px; }
+.card .ico { font-size: 22px; line-height: 1; margin-bottom: 10px; }
+
+.kinds { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin: 0; padding: 0; list-style: none; }
+.kinds li { display: flex; gap: 12px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 15px; }
+.kinds li .e { font-size: 20px; line-height: 1.2; flex: none; }
+.kinds li b { display: block; }
+.kinds li span.d { color: var(--muted); }
+.kinds li.fyi { background: var(--surface-2); }
+
+kbd { font: 600 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--surface-2); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 3px 6px; white-space: nowrap; }
+
+ol.steps { counter-reset: s; list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+ol.steps > li { counter-increment: s; position: relative; padding: 18px 20px 18px 64px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+ol.steps > li::before { content: counter(s); position: absolute; left: 20px; top: 18px; width: 30px; height: 30px; border-radius: 50%; background: var(--brand-soft); color: var(--brand); font-weight: 700; display: grid; place-items: center; }
+ol.steps h3 { margin: 2px 0 4px; font-size: 17px; }
+ol.steps p { margin: 0 0 6px; color: var(--muted); }
+pre { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 12px 14px; overflow-x: auto; font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; margin: 10px 0 8px; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92em; }
+p code, li code { overflow-wrap: anywhere; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; }
+pre code { background: none; padding: 0; color: inherit; overflow-wrap: normal; }
+
+.oss { display: grid; gap: 24px; align-items: center; }
+@media (min-width: 800px) { .oss { grid-template-columns: 1.4fr 1fr; } }
+.links { display: grid; gap: 10px; }
+.links a { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; text-decoration: none; color: var(--text); font-weight: 600; }
+.links a:hover { border-color: var(--brand); }
+.links a span { color: var(--muted); font-weight: 400; font-size: 14px; }
+
+footer { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--muted); font-size: 14px; }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; }
+footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="/"><img src="/img/icon-128.png" alt="" width="32" height="32">Pullbell</a>
+    <nav>
+      <a class="opt" href="#features">Features</a>
+      <a class="opt" href="#install">Install</a>
+      <a href="https://github.com/aaronsuns/pullbell">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div>
+      <h1>Your GitHub inbox, <span class="hl">in the menu bar.</span></h1>
+      <p class="lede">Pullbell rings for the things that need you: review requests, comments and reviews on
+        your pull requests, replies, mentions, a PR that just became ready to merge or got a conflict, a
+        failed deploy. Everything else waits in a quiet FYI list. No more review requests lost in email.</p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/aaronsuns/pullbell/releases/latest">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M6 11l6 6 6-6M4 21h16"/></svg>
+          Download for macOS</a>
+        <a class="btn ghost" href="https://github.com/aaronsuns/pullbell">View source</a>
+      </div>
+      <p class="small">Free and open source (MIT). macOS 13 or newer, Apple silicon and Intel.</p>
+    </div>
+
+    <figure>
+      <div class="desk" role="img" aria-label="Pullbell's menu open from the menu bar, listing three items that need you">
+        <div class="bar" aria-hidden="true">
+          <span class="dim">Wi-Fi</span>
+          <span class="bell"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a2 2 0 0 0-2 2v.3A7 7 0 0 0 5 11v4l-1.6 2.3A1 1 0 0 0 4.2 19h15.6a1 1 0 0 0 .8-1.7L19 15v-4a7 7 0 0 0-5-6.7V4a2 2 0 0 0-2-2zm-3 18a3 3 0 0 0 6 0z"/></svg>3+5</span>
+          <span class="dim">Wed 09:41</span>
+        </div>
+        <div class="menu" aria-hidden="true">
+          <div class="row hl"><span class="t">👀 web-app · alex requested your review: Add dark mode toggle</span></div>
+          <div class="row"><span class="t">💬 api-server · sam commented: Rate limit the search endpoint</span></div>
+          <div class="row"><span class="t">🚀 infra · Ready to merge: Bump Terraform to 1.9</span></div>
+          <div class="row"><span class="t">Clear all (8)</span></div>
+          <div class="sep"></div>
+          <div class="row"><span class="t">My open PRs (2)</span><span class="k">›</span></div>
+          <div class="row"><span class="t">Waiting for my review (1)</span><span class="k">›</span></div>
+          <div class="sep"></div>
+          <div class="row"><span class="t">Open queue</span><span class="k">⌃⌘G</span></div>
+          <div class="row"><span class="t">Open my PRs</span><span class="k">⌃⌘P</span></div>
+          <div class="row"><span class="t">Refresh now</span><span class="k">⌃⇧⌘G</span></div>
+          <div class="sep"></div>
+          <div class="row"><span class="t">Settings…</span></div>
+          <div class="row"><span class="t">GitHub notifications</span></div>
+          <div class="sep"></div>
+          <div class="row"><span class="t">About Pullbell</span></div>
+          <div class="row"><span class="t">Quit Pullbell</span></div>
+        </div>
+      </div>
+      <figcaption class="small">The menu bar shows <b>3+5</b>: three things need you, five are FYI. (Illustration; repos and people are made up.)</figcaption>
+    </figure>
+  </div>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <h2>Rings only when it's you they need</h2>
+    <p class="sub">Each GitHub event gets a kind. The ones that need you raise a macOS banner and count
+      towards <b>n</b>; the rest go to the FYI list. Any kind can be turned down to FYI in Settings.</p>
+    <ul class="kinds">
+      <li><span class="e">👀</span><div><b>Review requested</b><span class="d">directly or through one of your teams</span></div></li>
+      <li><span class="e">💬</span><div><b>Comments &amp; mentions</b><span class="d">a person comments on your PR or @-mentions you</span></div></li>
+      <li><span class="e">↩️</span><div><b>Replies</b><span class="d">in a review thread you took part in</span></div></li>
+      <li><span class="e">✅</span><div><b>Approved / changes requested</b><span class="d">reviews on your PRs</span></div></li>
+      <li><span class="e">🚀</span><div><b>Ready to merge</b><span class="d">approved, checks green, no conflict, not a draft</span></div></li>
+      <li><span class="e">⚠️</span><div><b>Conflict</b><span class="d">your PR just stopped being mergeable</span></div></li>
+      <li><span class="e">🔥</span><div><b>Deploy failed</b><span class="d">a deploy/release workflow failed on a watched default branch</span></div></li>
+      <li><span class="e">📋</span><div><b>Daily digest</b><span class="d">review requests still waiting on you (off by default)</span></div></li>
+      <li class="fyi"><span class="e">🤖</span><div><b>Bots &amp; everything else</b><span class="d">FYI, no banner</span></div></li>
+    </ul>
+
+    <div class="grid" style="margin-top: 32px">
+      <div class="card"><div class="ico">🤫</div><h3>Quiet by design</h3><p>Your own comments, reviews and pushes never ring. A burst of comments on one PR is one banner.</p></div>
+      <div class="card"><div class="ico">⌨️</div><h3>Keyboard first</h3><p><kbd>⌃⌘G</kbd> opens a searchable queue, <kbd>⌃⌘P</kbd> your PRs and the ones waiting for your review. <kbd>⏎</kbd> opens and marks done.</p></div>
+      <div class="card"><div class="ico">🎯</div><h3>Watch what matters</h3><p>Everything, or only your teams' repos plus any you add. Muted repos are always ignored.</p></div>
+      <div class="card"><div class="ico">🔒</div><h3>Private</h3><p>Talks only to GitHub's API. Your token lives in the macOS Keychain. No account, no tracking, no server of ours.</p></div>
+      <div class="card"><div class="ico">🌐</div><h3>Your browser, your profile</h3><p>Open links in the default browser, a specific one, or a specific Chrome profile.</p></div>
+      <div class="card"><div class="ico">🔄</div><h3>Updates itself</h3><p>Signed updates in the background, installed when no window is open.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <h2>Install</h2>
+    <p class="sub">About a minute. Needs macOS 13 (Ventura) or newer, on Apple silicon or Intel.</p>
+    <ol class="steps">
+      <li>
+        <h3>Download the DMG</h3>
+        <p>Get <code>Pullbell_x.y.z_universal.dmg</code> from the
+          <a href="https://github.com/aaronsuns/pullbell/releases/latest">latest release on GitHub</a>,
+          open it and drag Pullbell to Applications.</p>
+      </li>
+      <li>
+        <h3>Clear the quarantine flag, once</h3>
+        <p>Pullbell is a free side project, so it isn't notarized by Apple (that needs a paid developer
+          account). macOS therefore refuses to open it the first time and may call it "damaged". Run this
+          once in Terminal and it opens normally from then on, updates included:</p>
+        <pre><code>xattr -dr com.apple.quarantine /Applications/Pullbell.app</code></pre>
+        <p class="small">It only removes the "downloaded from the internet" mark from this one app. The source
+          is on GitHub if you'd rather build it yourself.</p>
+      </li>
+      <li>
+        <h3>Open it and sign in</h3>
+        <p>A bell appears in the menu bar and a welcome window walks you through it: sign in with GitHub
+          (a short device code, no password typed into Pullbell), choose what to watch, allow notifications,
+          start at login.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section id="source">
+  <div class="wrap oss">
+    <div>
+      <h2>Free &amp; open source</h2>
+      <p class="sub" style="margin-bottom: 0">Pullbell is MIT-licensed. Built with Tauri, Rust and React.
+        Bug reports, ideas and pull requests are welcome on GitHub.</p>
+    </div>
+    <div class="links">
+      <a href="https://github.com/aaronsuns/pullbell">Source code <span>github.com/aaronsuns/pullbell</span></a>
+      <a href="https://github.com/aaronsuns/pullbell/releases">Releases <span>download &amp; changelog</span></a>
+      <a href="https://github.com/aaronsuns/pullbell/issues">Issues <span>report a bug</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Made by Aaron Sun · <a href="https://zexa.se">Zexa</a></span>
+    <span>Pullbell is not affiliated with GitHub.</span>
+  </div>
+</footer>
+
+</body>
+</html>

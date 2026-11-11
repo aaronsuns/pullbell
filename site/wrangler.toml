@@ -1,0 +1,7 @@
+name = "pullbell-site"
+compatibility_date = "2026-10-01"
+workers_dev = true
+routes = [{ pattern = "pullbell.zexa.se", custom_domain = true }]
+[assets]
+directory = "./public"
+html_handling = "drop-trailing-slash"

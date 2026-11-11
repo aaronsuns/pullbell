@@ -7,6 +7,8 @@ you — review requests, comments and reviews on your pull requests, replies, me
 just became ready to merge or got a conflict, a failed deploy — and keeps everything else in a
 quiet FYI list. No more review requests lost in email.
 
+**Website:** <https://pullbell.zexa.se> · **Download:** [latest release](https://github.com/aaronsuns/pullbell/releases/latest)
+
 The menu bar shows `n+m`: **n** things need you, **m** are FYI.
 
 > Screenshot: _coming with the first release._
@@ -35,7 +37,7 @@ Every kind can be switched to FYI in Settings → Alerts.
 1. Download `Pullbell_x.y.z_universal.dmg` from the
    [latest release](https://github.com/aaronsuns/pullbell/releases/latest) and drag Pullbell to
    Applications. Needs macOS 13 or newer, Apple silicon or Intel.
-2. Pullbell is not notarized by Apple, so macOS will refuse to open it the first time. Clear the
+2. Pullbell is signed but not notarized by Apple, so macOS will refuse to open it the first time. Clear the
    quarantine flag once in Terminal:
 
    ```sh
