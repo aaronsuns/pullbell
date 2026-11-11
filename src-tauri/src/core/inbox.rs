@@ -31,6 +31,8 @@ pub struct State {
     pub login: Option<String>,
     /// False until the first sync after sign-in has completed (that sync is silent).
     pub synced_once: bool,
+    /// Version installed by the updater, announced once after the restart.
+    pub installed_update: Option<String>,
 }
 
 impl State {
@@ -51,7 +53,7 @@ impl State {
             self.items.push(e.clone());
             fresh.push(e);
         }
-        self.items.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
+        self.items.sort_by_key(|i| std::cmp::Reverse(i.updated_at));
         self.items.truncate(MAX_ITEMS);
         fresh
     }
@@ -150,7 +152,7 @@ pub fn banners(fresh: &[Event], settings: &Settings) -> Vec<Banner> {
         .into_iter()
         .map(|g| {
             let mut evs = groups.remove(&g).unwrap_or_default();
-            evs.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
+            evs.sort_by_key(|e| std::cmp::Reverse(e.updated_at));
             let newest = evs[0];
             let place = match newest.number {
                 Some(n) => format!("{}#{n}", newest.repo),

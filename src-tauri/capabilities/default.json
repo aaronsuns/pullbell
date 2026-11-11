@@ -3,5 +3,5 @@
   "identifier": "default",
   "description": "Permissions for Pullbell's own windows",
   "windows": ["queue", "myprs", "settings", "welcome", "about"],
-  "permissions": ["core:default"]
+  "permissions": ["core:default", "core:window:allow-close", "core:window:allow-hide"]
 }
