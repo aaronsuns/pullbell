@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pullbell: a GitHub inbox in your Mac's menu bar</title>
-<meta name="description" content="Pullbell is a free, open-source macOS menu bar app that rings for GitHub review requests, comments, mentions and ready-to-merge PRs. No more lost reviews.">
+<title>Pullbell: GitHub notifications in your Mac menu bar</title>
+<meta name="description" content="Pullbell is a free, open-source macOS menu bar app for GitHub notifications: banners for review requests, comments, mentions and ready-to-merge PRs.">
 <link rel="canonical" href="https://pullbell.zexa.se/">
 <meta name="theme-color" content="#3b4bdb">
 <meta name="color-scheme" content="light dark">
@@ -14,8 +14,8 @@
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Pullbell">
-<meta property="og:title" content="Pullbell: a GitHub inbox in your Mac's menu bar">
-<meta property="og:description" content="Rings for review requests, comments, mentions and ready-to-merge PRs. Everything else waits quietly. Free and open source.">
+<meta property="og:title" content="Pullbell: GitHub notifications in your Mac menu bar">
+<meta property="og:description" content="GitHub notifications in your Mac menu bar: banners for review requests, comments, mentions and ready-to-merge PRs. Free and open source.">
 <meta property="og:url" content="https://pullbell.zexa.se/">
 <meta property="og:image" content="https://pullbell.zexa.se/img/icon-512.png">
 <meta property="og:image:width" content="512">
@@ -43,6 +43,46 @@
 }
 </script>
 
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Is there a GitHub menu bar app for Mac?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Pullbell is a free, open-source one. It sorts GitHub notifications into things that need you (a macOS banner) and FYI (a quiet list), and shows the counts next to a bell in the menu bar."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "How quickly do notifications arrive?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Pullbell polls GitHub every 1, 3, 5 or 10 minutes (default 3), so a banner can take up to that long. Refresh now checks immediately."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does Pullbell send my data anywhere?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "No. It talks only to GitHub's API with your own token, which is kept in the macOS Keychain. There is no server of ours and no tracking."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Which Macs does it run on?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "macOS 13 (Ventura) or newer, Apple silicon and Intel. It is a macOS app only."
+   }
+  }
+ ]
+}
+</script>
 <style>
 :root {
   --bg: #f7f8fc;
@@ -198,6 +238,17 @@ pre code { background: none; padding: 0; color: inherit; overflow-wrap: normal; 
 footer { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--muted); font-size: 14px; }
 footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; }
 footer a { color: var(--muted); }
+
+.guides h3 { margin: 18px 0 4px; font-size: 17px; }
+.guides p { margin: 0 0 8px; }
+.guide-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.guide-list a { display: block; height: 100%; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: inherit; text-decoration: none; }
+.guide-list a:hover { border-color: var(--brand); }
+.guide-list b { display: block; margin-bottom: 4px; color: var(--brand); }
+.guide-list span { color: var(--muted); font-size: 14.5px; }
+
+.footguides { flex-basis: 100%; font-size: 14px; line-height: 1.9; margin: 0 0 12px; }
+.footguides a { color: inherit; margin-right: 4px; }
 </style>
 </head>
 <body>
@@ -208,6 +259,7 @@ footer a { color: var(--muted); }
     <nav>
       <a class="opt" href="#features">Features</a>
       <a class="opt" href="#install">Install</a>
+      <a class="opt" href="#guides">Guides</a>
       <a href="https://github.com/aaronsuns/pullbell">GitHub</a>
     </nav>
   </header>
@@ -317,6 +369,34 @@ footer a { color: var(--muted); }
   </div>
 </section>
 
+<section id="guides" class="guides">
+  <div class="wrap">
+    <h2>Guides</h2>
+    <p class="sub">How-tos and comparisons for keeping up with GitHub notifications, pull requests and review requests on a Mac.</p>
+    <ul class="guide-list">
+      <li><a href="/github-notifications-menu-bar-mac"><b>GitHub notifications in the Mac menu bar</b><span>Get GitHub notifications in the macOS menu bar: review requests, comments and mentions as banners, the rest in a quiet list. Free and open source.</span></a></li>
+      <li><a href="/github-pull-request-notifier-macos"><b>GitHub pull request notifier for macOS</b><span>A pull request notifier for macOS: know when your PR is approved, ready to merge, conflicted or commented on, and which PRs wait for you. Free, open source.</span></a></li>
+      <li><a href="/never-miss-github-review-requests"><b>Never miss a GitHub review request</b><span>Review requests lost in email? Get a banner the moment someone asks for your review, a daily digest of those still waiting, and a list of PRs to review.</span></a></li>
+      <li><a href="/pullbell-vs-gitify-octobox-github-notifications"><b>Pullbell vs Gitify vs Octobox</b><span>A fair comparison of GitHub notification tools: GitHub's inbox, Pullbell, Gitify and Octobox. What each does, where each fits, and which platforms they run on.</span></a></li>
+      <li><a href="/reduce-github-notification-noise"><b>Reduce GitHub notification noise</b><span>Too many GitHub notifications? Cut the noise: watch fewer repos, mute, ignore CI run alerts and bots, and get a menu bar inbox that rings only when needed.</span></a></li>
+    </ul>
+  </div>
+</section>
+
+<section id="faq" class="guides">
+  <div class="wrap">
+    <h2>Frequently asked questions</h2>
+      <h3>Is there a GitHub menu bar app for Mac?</h3>
+      <p>Pullbell is a free, open-source one. It sorts GitHub notifications into things that need you (a macOS banner) and FYI (a quiet list), and shows the counts next to a bell in the menu bar.</p>
+      <h3>How quickly do notifications arrive?</h3>
+      <p>Pullbell polls GitHub every 1, 3, 5 or 10 minutes (default 3), so a banner can take up to that long. <b>Refresh now</b> checks immediately.</p>
+      <h3>Does Pullbell send my data anywhere?</h3>
+      <p>No. It talks only to GitHub's API with your own token, which is kept in the macOS Keychain. There is no server of ours and no tracking.</p>
+      <h3>Which Macs does it run on?</h3>
+      <p>macOS 13 (Ventura) or newer, Apple silicon and Intel. It is a macOS app only.</p>
+  </div>
+</section>
+
 <section id="source">
   <div class="wrap oss">
     <div>
@@ -334,7 +414,8 @@ footer a { color: var(--muted); }
 
 <footer>
   <div class="wrap">
-    <span>Made by Aaron Sun · <a href="https://zexa.se">Zexa</a></span>
+    <nav aria-label="Guides" class="footguides"><strong>Guides:</strong> <a href="/github-notifications-menu-bar-mac">GitHub notifications in the Mac menu bar</a> · <a href="/github-pull-request-notifier-macos">GitHub pull request notifier for macOS</a> · <a href="/never-miss-github-review-requests">Never miss a GitHub review request</a> · <a href="/pullbell-vs-gitify-octobox-github-notifications">Pullbell vs Gitify vs Octobox</a> · <a href="/reduce-github-notification-noise">Reduce GitHub notification noise</a></nav>
+<span>Made by Aaron Sun · <a href="https://zexa.se">Zexa</a></span>
     <span>Pullbell is not affiliated with GitHub.</span>
   </div>
 </footer>

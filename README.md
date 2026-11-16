@@ -2,12 +2,14 @@
 
 <img src="docs/icon-1024.png" width="96" align="right" alt="Pullbell icon">
 
-A GitHub inbox in your Mac's menu bar. Pullbell rings (a macOS banner) for the things that need
+A GitHub notifications app for the Mac menu bar: a GitHub inbox that rings only for what needs you. Pullbell rings (a macOS banner) for the things that need
 you — review requests, comments and reviews on your pull requests, replies, mentions, a PR that
 just became ready to merge or got a conflict, a failed deploy — and keeps everything else in a
 quiet FYI list. No more review requests lost in email.
 
 **Website:** <https://pullbell.zexa.se> · **Download:** [latest release](https://github.com/aaronsuns/pullbell/releases/latest)
+
+Guides: [GitHub notifications in the Mac menu bar](https://pullbell.zexa.se/github-notifications-menu-bar-mac) · [GitHub pull request notifier for macOS](https://pullbell.zexa.se/github-pull-request-notifier-macos) · [Never miss a GitHub review request](https://pullbell.zexa.se/never-miss-github-review-requests) · [Pullbell vs Gitify vs Octobox](https://pullbell.zexa.se/pullbell-vs-gitify-octobox-github-notifications) · [Reduce GitHub notification noise](https://pullbell.zexa.se/reduce-github-notification-noise)
 
 The menu bar shows `n+m`: **n** things need you, **m** are FYI.
 

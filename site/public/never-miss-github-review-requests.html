@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Never miss a GitHub review request on your Mac - Pullbell</title>
+<meta name="description" content="Review requests lost in email? Get a banner the moment someone asks for your review, a daily digest of those still waiting, and a list of PRs to review.">
+<link rel="canonical" href="https://pullbell.zexa.se/never-miss-github-review-requests">
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="Never miss a GitHub review request on your Mac - Pullbell">
+<meta property="og:description" content="Review requests lost in email? Get a banner the moment someone asks for your review, a daily digest of those still waiting, and a list of PRs to review.">
+<meta property="og:url" content="https://pullbell.zexa.se/never-miss-github-review-requests">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://pullbell.zexa.se/img/icon-512.png">
+<meta property="og:site_name" content="Pullbell">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/guide.css">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement": [
+  {
+   "@type": "ListItem",
+   "position": 1,
+   "name": "Pullbell",
+   "item": "https://pullbell.zexa.se/"
+  },
+  {
+   "@type": "ListItem",
+   "position": 2,
+   "name": "Never miss a GitHub review request",
+   "item": "https://pullbell.zexa.se/never-miss-github-review-requests"
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Does a review request through a team count?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. Pullbell treats a review request as a \"needs you\" event whether it was addressed to you directly or to one of your teams."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Can I get a daily reminder of waiting reviews?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. The optional daily digest raises one banner a day, at an hour you choose, with the review requests still waiting on you. It is off by default."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Do I need to give Pullbell access to my repos?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Sign-in uses GitHub's device flow with the notifications, repo and read:org scopes. The token is stored in your macOS Keychain and used only to call GitHub's API from your Mac."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "What if my organization uses SAML single sign-on?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "The menu shows an \"Authorize for ORG\" line. Click it to authorize Pullbell for that organization. Other repos keep working meanwhile."
+   }
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "Article",
+ "headline": "Never miss a GitHub review request",
+ "url": "https://pullbell.zexa.se/never-miss-github-review-requests",
+ "inLanguage": "en",
+ "author": {
+  "@type": "Person",
+  "name": "Aaron Sun"
+ },
+ "publisher": {
+  "@type": "Organization",
+  "name": "Zexa",
+  "url": "https://zexa.se"
+ },
+ "datePublished": "2026-11-16",
+ "dateModified": "2026-11-16"
+}
+</script>
+</head>
+<body>
+<div class="bar"><div class="in">
+  <a class="brand" href="/"><img src="/img/icon-128.png" alt="" width="28" height="28">Pullbell</a>
+  <nav><a href="/#guides">Guides</a><a href="https://github.com/aaronsuns/pullbell">GitHub</a></nav>
+</div></div>
+<main>
+<p class="crumbs"><a href="/">Pullbell</a> / Never miss a GitHub review request</p>
+<h1>Never miss a GitHub review request</h1>
+<p class="lead">Someone is blocked until you review their pull request, and the only sign is one more email between a hundred others. Here are the ways to make review requests impossible to miss on a Mac, and how Pullbell does it.</p>
+<div class="install">
+  <a class="cta" href="https://github.com/aaronsuns/pullbell/releases/latest" target="_blank" rel="noopener">Download Pullbell for macOS <small>- free, MIT</small></a>
+  <p>macOS 13 or newer, Apple silicon and Intel. <a href="https://github.com/aaronsuns/pullbell">Source on GitHub</a>.</p>
+</div>
+
+<h2>Why review requests get lost</h2>
+<p>GitHub sends review requests the same way as everything else: as a notification in the web inbox and, depending on your settings, an email. If you are on several teams, a review request through a team looks no different from an @-mention in a long thread or a bot comment. The result is review requests that sit for days.</p>
+
+<h2>Option 1: tune GitHub's own settings</h2>
+<p>Start with what GitHub gives you. In your GitHub notification settings you can choose how you are notified (web, email, mobile) and whether to receive notifications for everything you watch or only when you are participating. Use the inbox filters on github.com/notifications to look at review requests only. It costs nothing, but you have to remember to open the page.</p>
+
+<h2>Option 2: a banner the moment it happens</h2>
+<p>Pullbell gives review requests the highest priority. A <strong>review requested</strong> notification, whether someone asked for you directly or through one of your teams, raises a macOS banner and counts towards the <strong>n</strong> in the menu bar count <code>n+m</code>. Click the banner and the pull request opens in your browser and is marked as done (and read on GitHub).</p>
+<p>Pullbell checks GitHub every 3 minutes by default, or every 1, 5 or 10 if you change it.</p>
+
+<h2>Option 3: the list of PRs waiting for you</h2>
+<p>Banners can be dismissed by accident. Pullbell also keeps a <strong>Waiting for my review</strong> submenu, built from a GitHub search for open PRs that request your review, and <kbd>⌃⌘P</kbd> opens it in a window where you can type to filter. Nothing leaves the list until the review request is gone from GitHub, so it works as a to-do list.</p>
+
+<h2>Option 4: a daily digest</h2>
+<p>If you like to clear reviews at a set time, turn on the <strong>daily digest</strong> in Settings, then Alerts. Once a day, at the hour you choose (06 to 12), Pullbell raises one banner listing the review requests still waiting on you. It is off by default.</p>
+
+<h2>Keep the noise low so the bell means something</h2>
+<p>A bell you learn to ignore is worse than none. Pullbell only rings for things that need you, keeps bots and the rest in an FYI list, ignores your own activity and merges a burst of comments on one PR into a single banner. Read more in <a href="/reduce-github-notification-noise">how to reduce GitHub notification noise</a>.</p>
+
+<h2>Get started</h2>
+<p>Download Pullbell from the <a href="https://github.com/aaronsuns/pullbell/releases/latest">latest release</a>, clear the quarantine flag once (<code>xattr -dr com.apple.quarantine /Applications/Pullbell.app</code>) and sign in. If you are choosing between tools, see <a href="/pullbell-vs-gitify-octobox-github-notifications">Pullbell vs Gitify and Octobox</a>.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Does a review request through a team count?</h3>
+<p>Yes. Pullbell treats a review request as a "needs you" event whether it was addressed to you directly or to one of your teams.</p>
+<h3>Can I get a daily reminder of waiting reviews?</h3>
+<p>Yes. The optional daily digest raises one banner a day, at an hour you choose, with the review requests still waiting on you. It is off by default.</p>
+<h3>Do I need to give Pullbell access to my repos?</h3>
+<p>Sign-in uses GitHub's device flow with the notifications, repo and read:org scopes. The token is stored in your macOS Keychain and used only to call GitHub's API from your Mac.</p>
+<h3>What if my organization uses SAML single sign-on?</h3>
+<p>The menu shows an "Authorize for ORG" line. Click it to authorize Pullbell for that organization. Other repos keep working meanwhile.</p>
+<div class="install">
+  <a class="cta" href="https://github.com/aaronsuns/pullbell/releases/latest" target="_blank" rel="noopener">Download Pullbell for macOS <small>- free, MIT</small></a>
+  <p>macOS 13 or newer, Apple silicon and Intel. <a href="https://github.com/aaronsuns/pullbell">Source on GitHub</a>.</p>
+</div>
+</main>
+<footer>
+<p><strong>More from Pullbell</strong></p>
+<ul><li><a href="/">Pullbell home page</a></li><li><a href="/github-notifications-menu-bar-mac">GitHub notifications in the Mac menu bar</a></li><li><a href="/github-pull-request-notifier-macos">GitHub pull request notifier for macOS</a></li><li><a href="/pullbell-vs-gitify-octobox-github-notifications">Pullbell vs Gitify vs Octobox</a></li><li><a href="/reduce-github-notification-noise">Reduce GitHub notification noise</a></li></ul>
+<p>Made by Aaron Sun · <a href="https://zexa.se">Zexa</a> · <a href="https://github.com/aaronsuns/pullbell">GitHub</a><br>Pullbell is not affiliated with GitHub.</p>
+</footer>
+</body>
+</html>

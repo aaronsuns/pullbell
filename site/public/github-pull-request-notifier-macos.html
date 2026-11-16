@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub pull request notifier for macOS - Pullbell</title>
+<meta name="description" content="A pull request notifier for macOS: know when your PR is approved, ready to merge, conflicted or commented on, and which PRs wait for you. Free, open source.">
+<link rel="canonical" href="https://pullbell.zexa.se/github-pull-request-notifier-macos">
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="GitHub pull request notifier for macOS - Pullbell">
+<meta property="og:description" content="A pull request notifier for macOS: know when your PR is approved, ready to merge, conflicted or commented on, and which PRs wait for you. Free, open source.">
+<meta property="og:url" content="https://pullbell.zexa.se/github-pull-request-notifier-macos">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://pullbell.zexa.se/img/icon-512.png">
+<meta property="og:site_name" content="Pullbell">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/guide.css">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement": [
+  {
+   "@type": "ListItem",
+   "position": 1,
+   "name": "Pullbell",
+   "item": "https://pullbell.zexa.se/"
+  },
+  {
+   "@type": "ListItem",
+   "position": 2,
+   "name": "GitHub pull request notifier for macOS",
+   "item": "https://pullbell.zexa.se/github-pull-request-notifier-macos"
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Does Pullbell notify me when my PR is approved?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. An approving review rings by default, and a separate \"Ready to merge\" banner fires when the PR is approved, checks are green, there is no conflict and it is not a draft."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Can it show PRs waiting for my review?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. The \"Waiting for my review\" submenu and the ⌃⌘P window list PRs where your review is requested, directly or through a team."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does it notify me of CI results?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Not for every run. GitHub's per-run CI notifications are ignored by default. You get a banner when a deploy, release or publish workflow fails on a watched default branch, and My open PRs shows a CI marker per PR."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Will I get a banner for my own comments?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "No. Your own comments, reviews and pushes never ring."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does it work with GitHub Enterprise Server?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "The repository does not document support for GitHub Enterprise Server, so it is not claimed here. Pullbell is built for github.com."
+   }
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "Article",
+ "headline": "A GitHub pull request notifier for macOS",
+ "url": "https://pullbell.zexa.se/github-pull-request-notifier-macos",
+ "inLanguage": "en",
+ "author": {
+  "@type": "Person",
+  "name": "Aaron Sun"
+ },
+ "publisher": {
+  "@type": "Organization",
+  "name": "Zexa",
+  "url": "https://zexa.se"
+ },
+ "datePublished": "2026-11-16",
+ "dateModified": "2026-11-16"
+}
+</script>
+</head>
+<body>
+<div class="bar"><div class="in">
+  <a class="brand" href="/"><img src="/img/icon-128.png" alt="" width="28" height="28">Pullbell</a>
+  <nav><a href="/#guides">Guides</a><a href="https://github.com/aaronsuns/pullbell">GitHub</a></nav>
+</div></div>
+<main>
+<p class="crumbs"><a href="/">Pullbell</a> / GitHub pull request notifier for macOS</p>
+<h1>A GitHub pull request notifier for macOS</h1>
+<p class="lead">If you open pull requests all day, the questions are always the same: did anyone review it, is it ready to merge, did it just get a conflict, and what is waiting for me? Pullbell answers them from the menu bar.</p>
+<div class="install">
+  <a class="cta" href="https://github.com/aaronsuns/pullbell/releases/latest" target="_blank" rel="noopener">Download Pullbell for macOS <small>- free, MIT</small></a>
+  <p>macOS 13 or newer, Apple silicon and Intel. <a href="https://github.com/aaronsuns/pullbell">Source on GitHub</a>.</p>
+</div>
+
+<h2>Know when your pull request changes state</h2>
+<p>Most notification tools tell you that something was <em>said</em> on your PR. Pullbell also tells you when the PR itself changes state. It watches your open PRs (<code>is:pr is:open author:@me</code>) and raises a banner on two transitions:</p>
+<ul>
+<li><strong>Ready to merge</strong>: approved, all checks green, no conflict, not a draft.</li>
+<li><strong>Conflict</strong>: the PR just became unmergeable because of a merge conflict.</li>
+</ul>
+<p>These fire when the state changes, not on every poll, and Pullbell remembers the last state so a restart does not repeat them. Approvals and changes-requested reviews each ring too, and comments and replies from people (not bots) come with the first part of the text in the banner.</p>
+
+<h2>See all your open PRs at a glance</h2>
+<p>The <strong>My open PRs</strong> submenu lists each PR with its CI state (green, failing or running) and review state (approved, waiting, changes requested, draft, conflict). Press <kbd>⌃⌘P</kbd> to open the same list in a searchable window. It also shows <strong>Waiting for my review</strong>, the PRs where someone requested your review (<code>review-requested:@me</code>), so you do not have to search GitHub for them.</p>
+
+<h2>Be told when a deploy fails</h2>
+<p>Pullbell can also watch the default branch of the repos you follow. When a workflow run fails and its name matches a pattern (default <code>deploy|release|publish</code>, editable in Settings), you get a banner. Routine CI run notifications, which GitHub sends once per workflow run you trigger, are ignored by default so they do not bury real events. Failures that matter still appear through the deploy alert and the CI marker on My open PRs.</p>
+
+<h2>Choose which repos to watch</h2>
+<p>By default Pullbell watches everything you get notifications for. If you are in many organizations you can limit it to the repos of the GitHub teams you pick plus any extra repos you type as <code>owner/name</code>. Muted repos are always ignored. If an organization uses SAML single sign-on, the menu shows <em>Authorize for ORG</em>; click it once and that org works too, while your other repos keep working in the meantime.</p>
+
+<h2>Set it up</h2>
+<p>Download the DMG from the <a href="https://github.com/aaronsuns/pullbell/releases/latest">latest release</a>, clear the quarantine flag once with <code>xattr -dr com.apple.quarantine /Applications/Pullbell.app</code>, open it and sign in with GitHub. Needs macOS 13 or newer.</p>
+<p>If your problem is noisy notifications rather than missing ones, read <a href="/reduce-github-notification-noise">how to reduce GitHub notification noise</a>. For the menu bar basics see <a href="/github-notifications-menu-bar-mac">GitHub notifications in the Mac menu bar</a>.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Does Pullbell notify me when my PR is approved?</h3>
+<p>Yes. An approving review rings by default, and a separate "Ready to merge" banner fires when the PR is approved, checks are green, there is no conflict and it is not a draft.</p>
+<h3>Can it show PRs waiting for my review?</h3>
+<p>Yes. The "Waiting for my review" submenu and the <kbd>⌃⌘P</kbd> window list PRs where your review is requested, directly or through a team.</p>
+<h3>Does it notify me of CI results?</h3>
+<p>Not for every run. GitHub's per-run CI notifications are ignored by default. You get a banner when a deploy, release or publish workflow fails on a watched default branch, and My open PRs shows a CI marker per PR.</p>
+<h3>Will I get a banner for my own comments?</h3>
+<p>No. Your own comments, reviews and pushes never ring.</p>
+<h3>Does it work with GitHub Enterprise Server?</h3>
+<p>The repository does not document support for GitHub Enterprise Server, so it is not claimed here. Pullbell is built for github.com.</p>
+<div class="install">
+  <a class="cta" href="https://github.com/aaronsuns/pullbell/releases/latest" target="_blank" rel="noopener">Download Pullbell for macOS <small>- free, MIT</small></a>
+  <p>macOS 13 or newer, Apple silicon and Intel. <a href="https://github.com/aaronsuns/pullbell">Source on GitHub</a>.</p>
+</div>
+</main>
+<footer>
+<p><strong>More from Pullbell</strong></p>
+<ul><li><a href="/">Pullbell home page</a></li><li><a href="/github-notifications-menu-bar-mac">GitHub notifications in the Mac menu bar</a></li><li><a href="/never-miss-github-review-requests">Never miss a GitHub review request</a></li><li><a href="/pullbell-vs-gitify-octobox-github-notifications">Pullbell vs Gitify vs Octobox</a></li><li><a href="/reduce-github-notification-noise">Reduce GitHub notification noise</a></li></ul>
+<p>Made by Aaron Sun · <a href="https://zexa.se">Zexa</a> · <a href="https://github.com/aaronsuns/pullbell">GitHub</a><br>Pullbell is not affiliated with GitHub.</p>
+</footer>
+</body>
+</html>

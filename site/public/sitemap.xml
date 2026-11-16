@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://pullbell.zexa.se/</loc>
-    <lastmod>2026-11-11</lastmod>
-  </url>
+  <url><loc>https://pullbell.zexa.se/</loc><lastmod>2026-11-16</lastmod></url>
+  <url><loc>https://pullbell.zexa.se/github-notifications-menu-bar-mac</loc><lastmod>2026-11-16</lastmod></url>
+  <url><loc>https://pullbell.zexa.se/github-pull-request-notifier-macos</loc><lastmod>2026-11-16</lastmod></url>
+  <url><loc>https://pullbell.zexa.se/never-miss-github-review-requests</loc><lastmod>2026-11-16</lastmod></url>
+  <url><loc>https://pullbell.zexa.se/pullbell-vs-gitify-octobox-github-notifications</loc><lastmod>2026-11-16</lastmod></url>
+  <url><loc>https://pullbell.zexa.se/reduce-github-notification-noise</loc><lastmod>2026-11-16</lastmod></url>
 </urlset>

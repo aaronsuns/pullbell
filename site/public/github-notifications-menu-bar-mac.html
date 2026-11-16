@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub notifications in your Mac menu bar - Pullbell</title>
+<meta name="description" content="Get GitHub notifications in the macOS menu bar: review requests, comments and mentions as banners, the rest in a quiet list. Free and open source.">
+<link rel="canonical" href="https://pullbell.zexa.se/github-notifications-menu-bar-mac">
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="GitHub notifications in your Mac menu bar - Pullbell">
+<meta property="og:description" content="Get GitHub notifications in the macOS menu bar: review requests, comments and mentions as banners, the rest in a quiet list. Free and open source.">
+<meta property="og:url" content="https://pullbell.zexa.se/github-notifications-menu-bar-mac">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://pullbell.zexa.se/img/icon-512.png">
+<meta property="og:site_name" content="Pullbell">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/guide.css">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement": [
+  {
+   "@type": "ListItem",
+   "position": 1,
+   "name": "Pullbell",
+   "item": "https://pullbell.zexa.se/"
+  },
+  {
+   "@type": "ListItem",
+   "position": 2,
+   "name": "GitHub notifications in the Mac menu bar",
+   "item": "https://pullbell.zexa.se/github-notifications-menu-bar-mac"
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Is there an official GitHub menu bar app for Mac?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Not for notifications. GitHub offers the web inbox at github.com/notifications, email and GitHub Mobile. Pullbell is an independent, open-source menu bar app that uses GitHub's public API and is not affiliated with GitHub."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does Pullbell work on Windows or Linux?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "No. Pullbell is a macOS app (macOS 13 or newer, Apple silicon and Intel)."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "How fast do banners arrive?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Pullbell polls GitHub every 1, 3, 5 or 10 minutes (default 3), so expect a delay of up to that interval. Use Refresh now (⌃⇧⌘G) to check immediately."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does Pullbell send my data anywhere?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "No. It talks only to GitHub's API with your token, which is kept in the macOS Keychain. Its list and a small log without tokens live on your Mac."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Is it free?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. Pullbell is free and open source under the MIT licence."
+   }
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "Article",
+ "headline": "GitHub notifications in the Mac menu bar",
+ "url": "https://pullbell.zexa.se/github-notifications-menu-bar-mac",
+ "inLanguage": "en",
+ "author": {
+  "@type": "Person",
+  "name": "Aaron Sun"
+ },
+ "publisher": {
+  "@type": "Organization",
+  "name": "Zexa",
+  "url": "https://zexa.se"
+ },
+ "datePublished": "2026-11-16",
+ "dateModified": "2026-11-16"
+}
+</script>
+</head>
+<body>
+<div class="bar"><div class="in">
+  <a class="brand" href="/"><img src="/img/icon-128.png" alt="" width="28" height="28">Pullbell</a>
+  <nav><a href="/#guides">Guides</a><a href="https://github.com/aaronsuns/pullbell">GitHub</a></nav>
+</div></div>
+<main>
+<p class="crumbs"><a href="/">Pullbell</a> / GitHub notifications in the Mac menu bar</p>
+<h1>GitHub notifications in the Mac menu bar</h1>
+<p class="lead">GitHub has a web inbox, email and a phone app, but nothing that lives in your Mac menu bar. Pullbell is a free, open-source menu bar app that puts your GitHub notifications there and only rings for the ones that need you.</p>
+<div class="install">
+  <a class="cta" href="https://github.com/aaronsuns/pullbell/releases/latest" target="_blank" rel="noopener">Download Pullbell for macOS <small>- free, MIT</small></a>
+  <p>macOS 13 or newer, Apple silicon and Intel. <a href="https://github.com/aaronsuns/pullbell">Source on GitHub</a>.</p>
+</div>
+
+<h2>What a GitHub menu bar app should do</h2>
+<p>The problem with GitHub notifications is not that there are too few, it is that there are too many of one kind and too easy to miss of another. A review request that someone is waiting on looks the same in email as a bot comment. A menu bar app earns its place only if it can tell those apart, and keep the count somewhere you glance at all day.</p>
+<p>Pullbell shows a count like <code>3+5</code> next to a small bell: <strong>3</strong> things need you, <strong>5</strong> are for your information. Click it and you see the newest items that need you. Click an item and it opens in your browser and is marked as read on GitHub. When nothing needs you the menu says so (for example <em>Nothing needs you · 12 FYI</em>).</p>
+
+<h2>Which GitHub events ring a banner</h2>
+<p>Each notification gets a kind. These raise a macOS banner by default:</p>
+<ul>
+<li><strong>Review requested</strong>, directly or through one of your teams.</li>
+<li><strong>Comments</strong> on your pull request and <strong>replies</strong> in a review thread you took part in.</li>
+<li><strong>Mentions</strong> when a person @-mentions you.</li>
+<li><strong>Approved</strong> and <strong>changes requested</strong> reviews on your PRs.</li>
+<li><strong>Ready to merge</strong>: your PR is approved, checks are green, there is no conflict and it is not a draft.</li>
+<li><strong>Conflict</strong>: your PR just got a merge conflict.</li>
+<li><strong>Deploy failed</strong>: a workflow whose name matches <code>deploy|release|publish</code> failed on the default branch of a watched repo.</li>
+</ul>
+<p>Bots and everything else go to the FYI list without a banner. Your own comments, reviews and pushes never ring, and a burst of comments on one PR becomes a single banner. You can turn any kind down to FYI in Settings, and nothing is ever dropped, only quieted. There is also an optional daily digest of the review requests still waiting on you (off by default).</p>
+
+<h2>Open the queue with a keyboard shortcut</h2>
+<p>Press <kbd>⌃⌘G</kbd> for a searchable queue of every item, needs-you first. Type to filter by repo, person or text, move with the arrow keys, press <kbd>⏎</kbd> to open and mark done or <kbd>⇧⏎</kbd> to mark done without opening. <kbd>⌃⌘P</kbd> opens a list of the PRs waiting for your review and your own open PRs, with CI and review status. <kbd>⌃⇧⌘G</kbd> refreshes now. All three can be changed in Settings.</p>
+
+<h2>How Pullbell gets your notifications</h2>
+<p>Pullbell talks directly to GitHub's API with your own token and polls every 1, 3, 5 or 10 minutes (default 3). That means banners arrive within a few minutes, not instantly. You sign in with GitHub's device flow: Pullbell shows a short code, you approve it on GitHub, and the token is stored in the macOS Keychain. It asks for the <code>notifications</code>, <code>repo</code> and <code>read:org</code> scopes. There is no server of ours in between and no account to create.</p>
+<p>The first sync after you sign in is silent, so you do not get a hundred banners for old notifications.</p>
+
+<h2>Install it in a minute</h2>
+<ol>
+<li>Download the DMG from the <a href="https://github.com/aaronsuns/pullbell/releases/latest">latest release</a> and drag Pullbell to Applications.</li>
+<li>Pullbell is signed but not notarized, so clear the quarantine flag once: <code>xattr -dr com.apple.quarantine /Applications/Pullbell.app</code></li>
+<li>Open it, sign in, choose what to watch and allow notifications. It starts at login by default.</li>
+</ol>
+<p>Compare it with the alternatives in <a href="/pullbell-vs-gitify-octobox-github-notifications">Pullbell vs Gitify and Octobox</a>, or read how to <a href="/never-miss-github-review-requests">never miss a GitHub review request</a>.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Is there an official GitHub menu bar app for Mac?</h3>
+<p>Not for notifications. GitHub offers the web inbox at github.com/notifications, email and GitHub Mobile. Pullbell is an independent, open-source menu bar app that uses GitHub's public API and is not affiliated with GitHub.</p>
+<h3>Does Pullbell work on Windows or Linux?</h3>
+<p>No. Pullbell is a macOS app (macOS 13 or newer, Apple silicon and Intel).</p>
+<h3>How fast do banners arrive?</h3>
+<p>Pullbell polls GitHub every 1, 3, 5 or 10 minutes (default 3), so expect a delay of up to that interval. Use Refresh now (<kbd>⌃⇧⌘G</kbd>) to check immediately.</p>
+<h3>Does Pullbell send my data anywhere?</h3>
+<p>No. It talks only to GitHub's API with your token, which is kept in the macOS Keychain. Its list and a small log without tokens live on your Mac.</p>
+<h3>Is it free?</h3>
+<p>Yes. Pullbell is free and open source under the MIT licence.</p>
+<div class="install">
+  <a class="cta" href="https://github.com/aaronsuns/pullbell/releases/latest" target="_blank" rel="noopener">Download Pullbell for macOS <small>- free, MIT</small></a>
+  <p>macOS 13 or newer, Apple silicon and Intel. <a href="https://github.com/aaronsuns/pullbell">Source on GitHub</a>.</p>
+</div>
+</main>
+<footer>
+<p><strong>More from Pullbell</strong></p>
+<ul><li><a href="/">Pullbell home page</a></li><li><a href="/github-pull-request-notifier-macos">GitHub pull request notifier for macOS</a></li><li><a href="/never-miss-github-review-requests">Never miss a GitHub review request</a></li><li><a href="/pullbell-vs-gitify-octobox-github-notifications">Pullbell vs Gitify vs Octobox</a></li><li><a href="/reduce-github-notification-noise">Reduce GitHub notification noise</a></li></ul>
+<p>Made by Aaron Sun · <a href="https://zexa.se">Zexa</a> · <a href="https://github.com/aaronsuns/pullbell">GitHub</a><br>Pullbell is not affiliated with GitHub.</p>
+</footer>
+</body>
+</html>
