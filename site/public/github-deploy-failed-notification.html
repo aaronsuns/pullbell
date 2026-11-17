@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get a notification when a GitHub deploy or release workflow fails</title>
+<meta name="description" content="Pullbell rings when a deploy, release or publish workflow fails on the default branch of a repo you watch, so a broken deploy is not discovered by a customer.">
+<link rel="canonical" href="https://pullbell.zexa.se/github-deploy-failed-notification">
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="Get a notification when a GitHub deploy or release workflow fails">
+<meta property="og:description" content="Pullbell rings when a deploy, release or publish workflow fails on the default branch of a repo you watch, so a broken deploy is not discovered by a customer.">
+<meta property="og:url" content="https://pullbell.zexa.se/github-deploy-failed-notification">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://pullbell.zexa.se/img/icon-512.png">
+<meta property="og:site_name" content="Pullbell">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/guide.css">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement": [
+  {
+   "@type": "ListItem",
+   "position": 1,
+   "name": "Pullbell",
+   "item": "https://pullbell.zexa.se/"
+  },
+  {
+   "@type": "ListItem",
+   "position": 2,
+   "name": "Deploy-failed notification",
+   "item": "https://pullbell.zexa.se/github-deploy-failed-notification"
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Which workflows count as a deploy?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Workflows whose name matches the pattern in Settings. The default pattern is deploy|release|publish."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Will I be notified of every failing CI run?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "No. CI run notifications are ignored by default. You can list them quietly by setting them to FYI."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does it need access to my repos?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "It signs in with GitHub using the notifications, repo and read:org scopes, and the token stays in your macOS Keychain."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does Pullbell send my data anywhere?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "No. It talks only to GitHub's API with your token."
+   }
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "Article",
+ "headline": "Get a notification when a GitHub deploy or release workflow fails",
+ "url": "https://pullbell.zexa.se/github-deploy-failed-notification",
+ "inLanguage": "en",
+ "image": "https://pullbell.zexa.se/img/shot-queue-light.png",
+ "author": {
+  "@type": "Person",
+  "name": "Aaron Sun"
+ },
+ "publisher": {
+  "@type": "Organization",
+  "name": "Zexa",
+  "url": "https://zexa.se"
+ },
+ "datePublished": "2026-11-17",
+ "dateModified": "2026-11-17"
+}
+</script>
+</head>
+<body>
+<div class="bar"><div class="in">
+  <a class="brand" href="/"><img src="/img/icon-128.png" alt="" width="28" height="28">Pullbell</a>
+  <nav><a href="/#guides">Guides</a><a href="https://github.com/aaronsuns/pullbell">GitHub</a></nav>
+</div></div>
+<main>
+<p class="crumbs"><a href="/">Pullbell</a> / Deploy-failed notification</p>
+<h1>Get a notification when a GitHub deploy or release workflow fails</h1>
+<p class="lead">A failed deploy on main is one of the few CI events worth interrupting you for. Most of the rest is noise. Here is how Pullbell separates them.</p>
+<div class="install">
+  <a class="cta" href="https://github.com/aaronsuns/pullbell/releases/latest" target="_blank" rel="noopener">Download Pullbell for macOS <small>- free, MIT</small></a>
+  <p>macOS 13 or newer, Apple silicon and Intel. <a href="https://github.com/aaronsuns/pullbell">Source on GitHub</a>.</p>
+</div>
+<p><img src="/img/shot-queue-light.png" alt="Pullbell&#x27;s queue: what needs you first, then the FYI list" width="560" style="max-width:100%;height:auto;border-radius:10px"></p>
+<h2>The problem with CI notifications</h2>
+<p>GitHub sends a notification for every workflow run you triggered. Most are green and most failures are your own test run, which you will see anyway. The one that matters, the deploy that broke on the default branch, gets buried.</p>
+<h2>What Pullbell does</h2>
+<ul>
+<li>🔥 <strong>Deploy failed</strong> rings when a deploy, release or publish workflow fails on a watched repo's default branch.</li>
+<li>The name pattern is configurable in Settings, then Alerts. The default is <code>deploy|release|publish</code>.</li>
+<li>Ordinary CI run notifications are ignored by default, so they do not fill the list. Set <strong>CI run notifications</strong> to FYI if you want them listed, quietly.</li>
+<li>In <strong>My PRs</strong> (<kbd>⌃⌘P</kbd>) each PR still shows a CI glyph, so failing checks on your own PRs stay visible.</li>
+</ul>
+<h2>Choosing which repos to watch</h2>
+<p>By default Pullbell watches everything GitHub notifies you about. You can instead watch only the repos of the GitHub teams you pick plus extra repos you type as <code>owner/name</code>, and mute repos completely.</p>
+<p>See also <a href="/reduce-github-notification-noise">reduce GitHub notification noise</a>.</p>
+<h2>Frequently asked questions</h2>
+<h3>Which workflows count as a deploy?</h3>
+<p>Workflows whose name matches the pattern in Settings. The default pattern is deploy|release|publish.</p>
+<h3>Will I be notified of every failing CI run?</h3>
+<p>No. CI run notifications are ignored by default. You can list them quietly by setting them to FYI.</p>
+<h3>Does it need access to my repos?</h3>
+<p>It signs in with GitHub using the notifications, repo and read:org scopes, and the token stays in your macOS Keychain.</p>
+<h3>Does Pullbell send my data anywhere?</h3>
+<p>No. It talks only to GitHub&#x27;s API with your token.</p>
+<div class="install">
+  <a class="cta" href="https://github.com/aaronsuns/pullbell/releases/latest" target="_blank" rel="noopener">Download Pullbell for macOS <small>- free, MIT</small></a>
+  <p>macOS 13 or newer, Apple silicon and Intel. <a href="https://github.com/aaronsuns/pullbell">Source on GitHub</a>.</p>
+</div>
+</main>
+<footer>
+<p><strong>More from Pullbell</strong></p>
+<ul><li><a href="/">Pullbell home page</a></li><li><a href="/github-notifications-menu-bar-mac">GitHub notifications in your Mac menu bar - Pullbell</a></li><li><a href="/github-pull-request-notifier-macos">GitHub pull request notifier for macOS - Pullbell</a></li><li><a href="/github-ready-to-merge-notification">Get a notification when your pull request is ready to merge</a></li><li><a href="/install-pullbell-mac">Install Pullbell on Mac: Homebrew or dmg, and sign in with GitHub</a></li><li><a href="/never-miss-github-review-requests">Never miss a GitHub review request on your Mac - Pullbell</a></li><li><a href="/pullbell-vs-gitify-octobox-github-notifications">Pullbell vs Gitify vs Octobox: GitHub notification tools</a></li><li><a href="/reduce-github-notification-noise">Reduce GitHub notification noise: a practical guide</a></li></ul>
+<p>Made by Aaron Sun · <a href="https://zexa.se">Zexa</a> · <a href="https://github.com/aaronsuns/pullbell">GitHub</a><br>Pullbell is not affiliated with GitHub.</p>
+</footer>
+</body>
+</html>

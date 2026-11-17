@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Install Pullbell on Mac: Homebrew or dmg, and sign in with GitHub</title>
+<meta name="description" content="Install Pullbell with one Homebrew command or the dmg, get past the macOS warning for a non-notarized app, and sign in with GitHub.">
+<link rel="canonical" href="https://pullbell.zexa.se/install-pullbell-mac">
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="Install Pullbell on Mac: Homebrew or dmg, and sign in with GitHub">
+<meta property="og:description" content="Install Pullbell with one Homebrew command or the dmg, get past the macOS warning for a non-notarized app, and sign in with GitHub.">
+<meta property="og:url" content="https://pullbell.zexa.se/install-pullbell-mac">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://pullbell.zexa.se/img/icon-512.png">
+<meta property="og:site_name" content="Pullbell">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/guide.css">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement": [
+  {
+   "@type": "ListItem",
+   "position": 1,
+   "name": "Pullbell",
+   "item": "https://pullbell.zexa.se/"
+  },
+  {
+   "@type": "ListItem",
+   "position": 2,
+   "name": "Install Pullbell on Mac",
+   "item": "https://pullbell.zexa.se/install-pullbell-mac"
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Why does macOS refuse to open Pullbell the first time?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "The app is signed but not notarized by Apple. Run xattr -dr com.apple.quarantine /Applications/Pullbell.app once, or install with Homebrew, which does it for you."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does Pullbell update itself?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. It checks at start and every 6 hours and can install updates in the background."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "How do I uninstall it?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Quit it from its menu, move Pullbell.app to the Trash, and remove ~/Library/Application Support/se.zexa.pullbell and ~/Library/Logs/Pullbell."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "I get no banners. What should I check?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "System Settings, then Notifications, then Pullbell, and that the kind is ticked in Settings, then Alerts."
+   }
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "Article",
+ "headline": "Install Pullbell on Mac: Homebrew or dmg, and sign in with GitHub",
+ "url": "https://pullbell.zexa.se/install-pullbell-mac",
+ "inLanguage": "en",
+ "image": "https://pullbell.zexa.se/img/shot-queue-light.png",
+ "author": {
+  "@type": "Person",
+  "name": "Aaron Sun"
+ },
+ "publisher": {
+  "@type": "Organization",
+  "name": "Zexa",
+  "url": "https://zexa.se"
+ },
+ "datePublished": "2026-11-17",
+ "dateModified": "2026-11-17"
+}
+</script>
+</head>
+<body>
+<div class="bar"><div class="in">
+  <a class="brand" href="/"><img src="/img/icon-128.png" alt="" width="28" height="28">Pullbell</a>
+  <nav><a href="/#guides">Guides</a><a href="https://github.com/aaronsuns/pullbell">GitHub</a></nav>
+</div></div>
+<main>
+<p class="crumbs"><a href="/">Pullbell</a> / Install Pullbell on Mac</p>
+<h1>Install Pullbell on Mac: Homebrew or dmg, and sign in with GitHub</h1>
+<p class="lead">Pullbell is free and open source. This page covers both install routes, the first-run warning, signing in, and what the welcome window sets up.</p>
+<div class="install">
+  <a class="cta" href="https://github.com/aaronsuns/pullbell/releases/latest" target="_blank" rel="noopener">Download Pullbell for macOS <small>- free, MIT</small></a>
+  <p>macOS 13 or newer, Apple silicon and Intel. <a href="https://github.com/aaronsuns/pullbell">Source on GitHub</a>.</p>
+</div>
+<p><img src="/img/shot-queue-light.png" alt="Pullbell&#x27;s queue: what needs you first, then the FYI list" width="560" style="max-width:100%;height:auto;border-radius:10px"></p>
+<h2>Option 1: Homebrew</h2>
+<pre><code>brew install --cask aaronsuns/tap/pullbell</code></pre>
+<p>The cask also clears the quarantine flag for you, so Pullbell opens right away.</p>
+<h2>Option 2: the dmg</h2>
+<ol>
+<li>Download <code>Pullbell_x.y.z_universal.dmg</code> from the <a href="https://github.com/aaronsuns/pullbell/releases/latest">latest release</a> and drag Pullbell to Applications. It needs macOS 13 or newer, Apple silicon or Intel.</li>
+<li>Pullbell is signed but not notarized by Apple (that needs a paid Apple developer account), so macOS refuses to open it the first time. Clear the quarantine flag once in Terminal: <code>xattr -dr com.apple.quarantine /Applications/Pullbell.app</code></li>
+<li>Open Pullbell. A bell appears in the menu bar and the welcome window opens.</li>
+</ol>
+<h2>Sign in with GitHub</h2>
+<p>Pullbell shows a short code, also copied to your clipboard, and opens GitHub's device page. Paste the code there and approve. Pullbell asks for the <code>notifications</code>, <code>repo</code> and <code>read:org</code> scopes, and keeps the token in your macOS Keychain, never on disk. If your organization uses SAML single sign-on, the menu shows an Authorize for &lt;org&gt; item: click it once.</p>
+<h2>Choose what to watch</h2>
+<p>Everything (the default), or only the repos of the GitHub teams you pick plus extra repos you type as <code>owner/name</code>. Then allow notifications with Send test banner. Start at login is on by default.</p>
+<h2>Shortcuts</h2>
+<p><kbd>⌃⌘G</kbd> opens the queue, <kbd>⌃⌘P</kbd> opens My PRs, <kbd>⌃⇧⌘G</kbd> refreshes now. All can be changed in Settings.</p>
+<h2>Frequently asked questions</h2>
+<h3>Why does macOS refuse to open Pullbell the first time?</h3>
+<p>The app is signed but not notarized by Apple. Run xattr -dr com.apple.quarantine /Applications/Pullbell.app once, or install with Homebrew, which does it for you.</p>
+<h3>Does Pullbell update itself?</h3>
+<p>Yes. It checks at start and every 6 hours and can install updates in the background.</p>
+<h3>How do I uninstall it?</h3>
+<p>Quit it from its menu, move Pullbell.app to the Trash, and remove ~/Library/Application Support/se.zexa.pullbell and ~/Library/Logs/Pullbell.</p>
+<h3>I get no banners. What should I check?</h3>
+<p>System Settings, then Notifications, then Pullbell, and that the kind is ticked in Settings, then Alerts.</p>
+<div class="install">
+  <a class="cta" href="https://github.com/aaronsuns/pullbell/releases/latest" target="_blank" rel="noopener">Download Pullbell for macOS <small>- free, MIT</small></a>
+  <p>macOS 13 or newer, Apple silicon and Intel. <a href="https://github.com/aaronsuns/pullbell">Source on GitHub</a>.</p>
+</div>
+</main>
+<footer>
+<p><strong>More from Pullbell</strong></p>
+<ul><li><a href="/">Pullbell home page</a></li><li><a href="/github-deploy-failed-notification">Get a notification when a GitHub deploy or release workflow fails</a></li><li><a href="/github-notifications-menu-bar-mac">GitHub notifications in your Mac menu bar - Pullbell</a></li><li><a href="/github-pull-request-notifier-macos">GitHub pull request notifier for macOS - Pullbell</a></li><li><a href="/github-ready-to-merge-notification">Get a notification when your pull request is ready to merge</a></li><li><a href="/never-miss-github-review-requests">Never miss a GitHub review request on your Mac - Pullbell</a></li><li><a href="/pullbell-vs-gitify-octobox-github-notifications">Pullbell vs Gitify vs Octobox: GitHub notification tools</a></li><li><a href="/reduce-github-notification-noise">Reduce GitHub notification noise: a practical guide</a></li></ul>
+<p>Made by Aaron Sun · <a href="https://zexa.se">Zexa</a> · <a href="https://github.com/aaronsuns/pullbell">GitHub</a><br>Pullbell is not affiliated with GitHub.</p>
+</footer>
+</body>
+</html>
