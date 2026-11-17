@@ -13,7 +13,9 @@ Guides: [GitHub notifications in the Mac menu bar](https://pullbell.zexa.se/gith
 
 The menu bar shows `n+m`: **n** things need you, **m** are FYI.
 
-> Screenshot: _coming with the first release._
+<p><img src="docs/shot-queue-light.png" width="420" alt="Pullbell queue: needs-you items first, then FYI"> <img src="docs/shot-my-prs-light.png" width="420" alt="Pullbell My PRs"></p>
+
+*Demo data.*
 
 ## What rings
 
