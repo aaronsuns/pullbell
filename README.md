@@ -46,6 +46,14 @@ When nothing needs you the menu says so, with the FYI count (**Nothing needs you
 
 ## Install
 
+**Homebrew** (clears the quarantine flag for you):
+
+```sh
+brew install --cask aaronsuns/tap/pullbell
+```
+
+Or by hand:
+
 1. Download `Pullbell_x.y.z_universal.dmg` from the
    [latest release](https://github.com/aaronsuns/pullbell/releases/latest) and drag Pullbell to
    Applications. Needs macOS 13 or newer, Apple silicon or Intel.
