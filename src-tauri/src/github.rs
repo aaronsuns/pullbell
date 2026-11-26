@@ -221,8 +221,7 @@ impl GitHub {
                     .is_some_and(|l| l.eq_ignore_ascii_case(me))
             })
             .filter_map(|r| r.get("state").and_then(Value::as_str))
-            .filter(|s| matches!(*s, "APPROVED" | "CHANGES_REQUESTED" | "DISMISSED"))
-            .next_back();
+            .rfind(|s| matches!(*s, "APPROVED" | "CHANGES_REQUESTED" | "DISMISSED"));
         Ok(state == Some("APPROVED"))
     }
 
