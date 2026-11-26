@@ -52,7 +52,7 @@ export type Browser =
 export interface Settings {
   version: number;
   repos: { mode: "everything" | "allowlist"; teams: string[]; extra: string[]; muted: string[] };
-  alerts: { banners: Record<string, boolean>; digest_hour: number | null; failure_pattern: string; ci_runs: "ignore" | "fyi" };
+  alerts: { banners: Record<string, boolean>; digest_hour: number | null; failure_pattern: string; ci_runs: "ignore" | "fyi"; quiet_after_approve?: boolean };
   shortcuts: { queue: string | null; my_prs: string | null; refresh: string | null };
   poll_minutes: number;
   start_at_login: boolean;

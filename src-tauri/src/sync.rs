@@ -8,7 +8,7 @@ use chrono::{DateTime, NaiveDateTime, Utc};
 use crate::core::classify::{classify, ignored};
 use crate::core::digest;
 use crate::core::inbox::{banners, Banner, State};
-use crate::core::model::{Event, PullRequest};
+use crate::core::model::{Event, Kind, PullRequest};
 use crate::core::prs::transitions;
 use crate::core::runs::{failures, pattern};
 use crate::core::scope::{Scope, ScopeMode};
@@ -102,7 +102,21 @@ pub async fn sync(
                         None
                     }
                 };
-                events.extend(classify(&n, detail.as_ref(), login));
+                let mut ev = classify(&n, detail.as_ref(), login);
+                if let Some(e) = ev.as_mut() {
+                    if settings.alerts.quiet_after_approve
+                        && e.kind == Kind::Reply
+                        && n.subject.kind == "PullRequest"
+                    {
+                        if let Some(num) = e.number {
+                            // Best effort: on any error the reply keeps ringing.
+                            if gh.approved_by(&e.repo, num, login).await.unwrap_or(false) {
+                                e.kind = Kind::Other;
+                            }
+                        }
+                    }
+                }
+                events.extend(ev);
             }
             state.notifications_last_modified = last_modified;
             state.reasons_backfilled = true;

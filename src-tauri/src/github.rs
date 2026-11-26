@@ -203,6 +203,29 @@ impl GitHub {
         }))
     }
 
+    /// Has `me` approved this PR, i.e. is their latest decisive review (approved, changes
+    /// requested or dismissed) an approval?
+    pub async fn approved_by(&self, repo: &str, number: u64, me: &str) -> Result<bool> {
+        let reviews = self
+            .get_json(&format!(
+                "/repos/{repo}/pulls/{number}/reviews?per_page=100"
+            ))
+            .await?;
+        let state = reviews
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter(|r| {
+                r.pointer("/user/login")
+                    .and_then(Value::as_str)
+                    .is_some_and(|l| l.eq_ignore_ascii_case(me))
+            })
+            .filter_map(|r| r.get("state").and_then(Value::as_str))
+            .filter(|s| matches!(*s, "APPROVED" | "CHANGES_REQUESTED" | "DISMISSED"))
+            .next_back();
+        Ok(state == Some("APPROVED"))
+    }
+
     pub async fn mark_thread_read(&self, thread_id: &str) -> Result<()> {
         let url = self.url(&format!("/notifications/threads/{thread_id}"))?;
         self.send(self.req(Method::PATCH, &url)).await.map(|_| ())

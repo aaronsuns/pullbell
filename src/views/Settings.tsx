@@ -121,6 +121,16 @@ export function SettingsView() {
         </select>
       </div>
       <div className="field">
+        <label>Quiet after I approve</label>
+        <select
+          value={(s.alerts.quiet_after_approve ?? true) ? "on" : "off"}
+          onChange={(e) => void save({ ...s, alerts: { ...s.alerts, quiet_after_approve: e.target.value === "on" } })}
+        >
+          <option value="on">Replies on PRs I approved are FYI</option>
+          <option value="off">Ring as usual</option>
+        </select>
+      </div>
+      <div className="field">
         <label>Deploy workflow pattern</label>
         <input
           defaultValue={s.alerts.failure_pattern}

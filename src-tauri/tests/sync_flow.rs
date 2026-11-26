@@ -381,3 +381,69 @@ async fn upgrade_drops_ci_items_saved_without_a_reason() {
         .any(|r| r.headers.contains_key("if-modified-since"));
     assert!(!conditional, "the cached Last-Modified is skipped once");
 }
+
+fn review_reply_notification(base: &str) -> Value {
+    json!({
+        "id": "3001",
+        "unread": true,
+        "reason": "comment",
+        "updated_at": "2026-03-02T11:00:00Z",
+        "subject": {
+            "title": "Add dark mode toggle",
+            "url": format!("{base}/repos/octo-org/web-app/pulls/42"),
+            "latest_comment_url": format!("{base}/repos/octo-org/web-app/pulls/comments/777"),
+            "type": "PullRequest"
+        },
+        "repository": { "full_name": "octo-org/web-app" }
+    })
+}
+
+async fn reply_kind_after(my_review_state: &str, quiet: bool) -> Kind {
+    let server = MockServer::start().await;
+    let base = server.uri();
+    // Mounted before mount_github so it wins over its empty reviews list.
+    Mock::given(method("GET"))
+        .and(path("/repos/octo-org/web-app/pulls/42/reviews"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!([
+            {"user": {"login": "octocat"}, "state": my_review_state},
+            {"user": {"login": "sam"}, "state": "CHANGES_REQUESTED"}
+        ])))
+        .mount(&server)
+        .await;
+    Mock::given(method("GET"))
+        .and(path("/repos/octo-org/web-app/pulls/comments/777"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+            "id": 777, "diff_hunk": "@@", "in_reply_to_id": 700, "body": "Fixed, thanks",
+            "user": {"login": "sam", "type": "User"},
+            "html_url": "https://github.com/octo-org/web-app/pull/42#discussion_r777"
+        })))
+        .mount(&server)
+        .await;
+    mount_github(
+        &server,
+        json!([review_reply_notification(&base)]),
+        json!({"workflow_runs": []}),
+    )
+    .await;
+    let gh = GitHub::new(&base, "t");
+    let mut state = State::default();
+    let mut settings = Settings::default();
+    settings.alerts.quiet_after_approve = quiet;
+    run_sync(&gh, &mut state, &settings).await;
+    state.items.iter().find(|i| i.key == "n:3001").unwrap().kind
+}
+
+#[tokio::test]
+async fn replies_on_a_pr_i_approved_are_fyi() {
+    assert_eq!(reply_kind_after("APPROVED", true).await, Kind::Other);
+}
+
+#[tokio::test]
+async fn replies_still_ring_when_not_approved_or_setting_off() {
+    assert_eq!(reply_kind_after("COMMENTED", true).await, Kind::Reply);
+    assert_eq!(
+        reply_kind_after("CHANGES_REQUESTED", true).await,
+        Kind::Reply
+    );
+    assert_eq!(reply_kind_after("APPROVED", false).await, Kind::Reply);
+}

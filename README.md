@@ -34,7 +34,8 @@ The menu bar shows `n+m`: **n** things need you, **m** are FYI.
 | 🤖 | Bot / other | bots and everything else — FYI, no banner |
 
 Your own comments, reviews and pushes never ring. A burst of comments on one PR is one banner.
-Every kind can be switched to FYI in Settings → Alerts.
+Every kind can be switched to FYI in Settings → Alerts. Replies in review threads on a PR you
+already approved are FYI too (Settings → Alerts → **Quiet after I approve**, on by default).
 
 CI run notifications (GitHub's `ci_activity`, one per workflow run you triggered) are ignored by
 default: left unread on GitHub and kept out of the list. Failures that matter still show up as 🔥

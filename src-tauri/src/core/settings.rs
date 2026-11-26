@@ -52,6 +52,9 @@ pub struct AlertSettings {
     /// What to do with `ci_activity` notifications (one per workflow run you triggered).
     /// Settings files written before this field existed load as [`CiRuns::Ignore`].
     pub ci_runs: CiRuns,
+    /// Replies in review threads on a PR you already approved are FYI instead of ringing.
+    /// Settings files written before this field existed load as on.
+    pub quiet_after_approve: bool,
 }
 
 /// Settings → Alerts → CI run notifications.
@@ -118,6 +121,7 @@ impl Default for AlertSettings {
             digest_hour: None,
             failure_pattern: DEFAULT_PATTERN.into(),
             ci_runs: CiRuns::Ignore,
+            quiet_after_approve: true,
         }
     }
 }
